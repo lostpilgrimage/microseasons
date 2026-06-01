@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit an Observation — SD Microseason Project</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f9f9f7;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    border: 0.5px solid #e0e0da;
+    padding: 2rem;
+    width: 100%;
+    max-width: 520px;
+  }
+  .project-header { margin-bottom: 1.75rem; }
+  .project-header h1 { font-size: 15px; font-weight: 600; color: #3B6D11; margin-bottom: 2px; letter-spacing: 0.02em; text-transform: uppercase; }
+  .project-header h2 { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px; }
+  .project-header p { font-size: 13px; color: #888; line-height: 1.5; }
+  label { display: block; font-size: 12px; font-weight: 500; color: #666; margin-bottom: 6px; }
+  input, textarea {
+    width: 100%; font-size: 14px; color: #1a1a1a;
+    background: #fff; border: 0.5px solid #ccc;
+    border-radius: 8px; padding: 8px 10px;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus { outline: none; border-color: #888; }
+  textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+  .hint { font-size: 11px; color: #aaa; margin-top: 5px; line-height: 1.4; }
+  .divider { border: none; border-top: 0.5px solid #eee; margin: 1.25rem 0; }
+  .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 8px; }
+  .btn-primary {
+    padding: 10px 22px; font-size: 14px; font-weight: 500;
+    border-radius: 8px; border: none; background: #1a1a1a;
+    color: #fff; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary:hover { opacity: .85; }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-back {
+    padding: 10px 14px; font-size: 14px; border-radius: 8px;
+    border: 0.5px solid #ccc; background: transparent;
+    color: #888; cursor: pointer; font-family: inherit;
+  }
+  .btn-back:hover { background: #f5f5f5; }
+  .chip-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    padding: 8px 14px; font-size: 13px; border-radius: 999px;
+    border: 0.5px solid #ccc; cursor: pointer; background: #fff;
+    color: #666; display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit; transition: background .1s, color .1s, border-color .1s;
+  }
+  .chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
+  .cat-chip { padding: 10px 16px; font-size: 14px; }
+  .step-dots { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #ddd; transition: all .2s; }
+  .dot.active { background: #1a1a1a; width: 18px; border-radius: 3px; }
+  .dot.done { background: #3B6D11; }
+  .field { margin-bottom: 1.1rem; }
+  .loc-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
+  .loc-btn {
+    flex: 1; padding: 10px; font-size: 13px; border: 0.5px solid #ccc;
+    border-radius: 8px; cursor: pointer; background: #fff; color: #666;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    font-family: inherit;
+  }
+  .loc-btn.sel { border-color: #1a1a1a; background: #1a1a1a; color: #fff; font-weight: 500; }
+  #map-container {
+    height: 220px; border-radius: 8px; overflow: hidden;
+    border: 0.5px solid #ccc; margin-bottom: 6px; display: none; position: relative;
+  }
+  #leaflet-map { height: 100%; width: 100%; }
+  .map-loading {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; color: #888;
+    background: #f0f0ec; z-index: 1;
+  }
+  .ts-pills { display: flex; gap: 6px; margin-bottom: 8px; }
+  .ts-pill {
+    font-size: 12px; padding: 5px 14px; border-radius: 999px;
+    border: 0.5px solid #ccc; cursor: pointer; background: #fff;
+    color: #666; font-family: inherit;
+  }
+  .ts-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; font-weight: 500; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .abund-row { display: flex; gap: 6px; }
+  .abund-chip {
+    flex: 1; padding: 7px 4px; font-size: 12px; border: 0.5px solid #ccc;
+    border-radius: 8px; cursor: pointer; background: #fff; color: #666;
+    text-align: center; font-family: inherit; transition: background .1s, color .1s;
+  }
+  .abund-chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
+  .new-tag-row { display: none; flex-direction: row; gap: 6px; align-items: center; margin-top: 8px; }
+  .new-tag-row input { font-size: 13px; padding: 6px 10px; }
+  .new-tag-row button {
+    padding: 6px 12px; font-size: 12px; border-radius: 8px;
+    border: 0.5px solid #ccc; background: #fff; color: #333;
+    cursor: pointer; white-space: nowrap; font-family: inherit;
+  }
+  .suggest-btn {
+    display: inline-flex; align-items: center; gap: 5px; padding: 8px 12px;
+    font-size: 13px; border-radius: 999px; border: 0.5px dashed #ccc;
+    cursor: pointer; background: transparent; color: #aaa; font-family: inherit;
+  }
+  .suggest-btn:hover { color: #666; }
+  .photo-drop {
+    border: 0.5px dashed #ccc; border-radius: 8px; padding: 1rem;
+    text-align: center; color: #aaa; font-size: 13px; cursor: pointer;
+  }
+  .review-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 7px 0; border-bottom: 0.5px solid #eee; font-size: 13px; gap: 12px;
+  }
+  .review-row:last-child { border-bottom: none; }
+  .rl { color: #888; flex-shrink: 0; }
+  .rv { color: #1a1a1a; text-align: right; }
+  .review-box { background: #f9f9f7; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .success-wrap { text-align: center; padding: 2.5rem 0; }
+  .success-icon { font-size: 48px; display: block; margin-bottom: 1rem; }
+  .error-banner {
+    background: #fff0f0; border: 0.5px solid #f0c0c0; border-radius: 8px;
+    padding: 10px 14px; font-size: 13px; color: #933; margin-bottom: 1rem; display: none;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="project-header">
+    <h1>San Diego Microseason Project</h1>
+    <h2>What did you notice?</h2>
+    <p>Your sighting helps build a living seasonal calendar for San Diego. Every observation counts — it takes less than a minute.</p>
+  </div>
+
+  <div class="step-dots" id="dots">
+    <div class="dot active" id="d1"></div>
+    <div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div>
+    <div class="dot" id="d4"></div>
+  </div>
+
+  <div id="error-banner" class="error-banner"></div>
+
+  <!-- ── STEP 1: What ── -->
+  <div id="step-1">
+    <div class="field">
+      <label>What kind of thing?</label>
+      <div class="chip-grid" id="cat-chips">
+        <button class="chip cat-chip" data-cat="plant"      onclick="selCat(this,'plant')">🌿 Plant</button>
+        <button class="chip cat-chip" data-cat="animal"     onclick="selCat(this,'animal')">🐾 Animal</button>
+        <button class="chip cat-chip" data-cat="bug"        onclick="selCat(this,'bug')">🐛 Bug / insect</button>
+        <button class="chip cat-chip" data-cat="fungi"      onclick="selCat(this,'fungi')">🍄 Fungi</button>
+        <button class="chip cat-chip" data-cat="water"      onclick="selCat(this,'water')">💧 Water</button>
+        <button class="chip cat-chip" data-cat="atmosphere" onclick="selCat(this,'atmosphere')">🌤 Atmosphere</button>
+        <button class="chip cat-chip" data-cat="other"      onclick="selCat(this,'other')">· · · Other</button>
+      </div>
+    </div>
+    <div class="field" id="species-field" style="display:none">
+      <label id="species-label">Name</label>
+      <input type="text" id="species" placeholder="">
+    </div>
+    <div class="field" id="abund-field" style="display:none">
+      <label>How many?</label>
+      <div class="abund-row">
+        <button class="abund-chip" onclick="selAbund(this)">One</button>
+        <button class="abund-chip" onclick="selAbund(this)">A few</button>
+        <button class="abund-chip" onclick="selAbund(this)">Many</button>
+        <button class="abund-chip" onclick="selAbund(this)">Loads</button>
+      </div>
+    </div>
+    <div class="btn-row">
+      <span></span>
+      <button class="btn-primary" onclick="goStep(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: When & Where ── -->
+  <div id="step-2" style="display:none">
+    <div class="field">
+      <label>When?</label>
+      <div class="ts-pills">
+        <button class="ts-pill active" id="ts-now"   onclick="setTs('now')">Right now</button>
+        <button class="ts-pill"        id="ts-retro" onclick="setTs('retro')">Another time</button>
+      </div>
+      <div class="row2">
+        <div>
+          <label style="font-size:11px;margin-bottom:3px">Date</label>
+          <input type="date" id="obs-date">
+        </div>
+        <div>
+          <label style="font-size:11px;margin-bottom:3px">Time <span style="font-weight:400;color:#aaa">(optional)</span></label>
+          <input type="time" id="obs-time">
+        </div>
+      </div>
+      <div class="hint" id="ts-hint">Timestamp locked to right now.</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="field">
+      <label>Where?</label>
+      <div class="loc-toggle">
+        <button class="loc-btn sel" id="loc-here" onclick="setLoc('here')">📍 Here</button>
+        <button class="loc-btn"     id="loc-map"  onclick="setLoc('map')">🗺 Mark on map</button>
+      </div>
+      <div id="here-status" class="hint"></div>
+      <div id="map-container">
+        <div class="map-loading" id="map-loading">Loading map…</div>
+        <div id="leaflet-map"></div>
+      </div>
+      <div class="hint" id="map-hint" style="display:none">Tap the map to place a pin. Drag it to adjust.</div>
+    </div>
+
+    <div class="field">
+      <label>Setting <span style="font-weight:400;color:#aaa">(pick any that fit)</span></label>
+      <div class="chip-grid" id="setting-chips">
+        <button class="chip" onclick="togChip(this)">Canyon</button>
+        <button class="chip" onclick="togChip(this)">Beach</button>
+        <button class="chip" onclick="togChip(this)">Shoreline / bluff</button>
+        <button class="chip" onclick="togChip(this)">Chaparral</button>
+        <button class="chip" onclick="togChip(this)">Wetland / estuary</button>
+        <button class="chip" onclick="togChip(this)">Park / open space</button>
+        <button class="chip" onclick="togChip(this)">Urban / backyard</button>
+        <button class="chip" onclick="togChip(this)">Creek / riparian</button>
+        <button class="chip" onclick="togChip(this)">Bay / harbor</button>
+        <button class="chip" onclick="togChip(this)">Offshore</button>
+        <button class="chip" onclick="togChip(this)">Mesa / plateau</button>
+        <button class="chip" onclick="togChip(this)">Desert</button>
+        <button class="chip" onclick="togChip(this)">Mountain</button>
+        <button class="chip" onclick="togChip(this)">Oak woodland</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(1)">←</button>
+      <button class="btn-primary" onclick="goStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Details ── -->
+  <div id="step-3" style="display:none">
+    <div class="field">
+      <label id="tag-label">What was it doing? <span style="font-weight:400;color:#aaa">(optional)</span></label>
+      <div class="chip-grid" id="behavior-chips"></div>
+      <div class="new-tag-row" id="new-tag-wrap">
+        <input type="text" id="new-tag-text" placeholder="Suggest a tag…" style="flex:1">
+        <button onclick="addCustomTag()">Add</button>
+      </div>
+    </div>
+    <div class="field" style="margin-top:1rem">
+      <label>Anything else? <span style="font-weight:400;color:#aaa">(optional)</span></label>
+      <textarea id="desc" placeholder="A sentence is plenty — unusual behavior, rough count, what caught your eye…"></textarea>
+    </div>
+    <div class="field">
+      <label>Photo <span style="font-weight:400;color:#aaa">(optional but always helpful)</span></label>
+      <input type="file" id="photo-input" accept="image/*,image/heic" style="display:none" onchange="photoSelected(this)">
+      <div class="photo-drop" onclick="document.getElementById('photo-input').click()">
+        📷 Tap to upload
+        <div id="photo-name" style="font-size:11px;color:#3B6D11;margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Your name or handle <span style="font-weight:400;color:#aaa">(optional)</span></label>
+      <input type="text" id="contributor" placeholder="How you'd like to be credited">
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(2)">←</button>
+      <button class="btn-primary" onclick="goStep(4)">Review →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Review & Submit ── -->
+  <div id="step-4" style="display:none">
+    <div class="review-box">
+      <div id="review-rows"></div>
+    </div>
+    <div class="hint" style="margin-bottom:1.25rem">
+      Coordinates are stored privately and used only for microseason mapping.<br>
+      Custom tags you suggest are reviewed by the project team before being added to the list.
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goStep(3)">←</button>
+      <button class="btn-primary" id="submit-btn" onclick="submitForm()">Submit ✓</button>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS ── -->
+  <div id="step-success" style="display:none">
+    <div class="success-wrap">
+      <span class="success-icon">✅</span>
+      <h2 style="font-size:20px;font-weight:500;margin-bottom:8px">Logged — thank you!</h2>
+      <p style="font-size:14px;color:#888;margin-bottom:1.75rem;line-height:1.6">
+        Your observation is now part of the San Diego Microseason dataset.<br>
+        It may take a few weeks to appear on the calendar as patterns build.
+      </p>
+      <button class="btn-primary" onclick="resetForm()">Submit another observation</button>
+    </div>
+  </div>
+
+</div><!-- end .card -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+
+// ═══════════════════════════════════════════════
+//  FILL IN YOUR SUPABASE CREDENTIALS HERE
+// ═══════════════════════════════════════════════
+const SUPABASE_URL      = 'https://YOUR-PROJECT-ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+// ═══════════════════════════════════════════════
+
+// ── Tag sets per category ──
+const TAGS = {
+  plant:      ['Flowering','Fruiting','Budding','Going to seed','Leafing out','Dying back','First of season','Last of season','Peak bloom','Unusually early','Unusually late'],
+  animal:     ['Calling / singing','Nesting','Courting','Feeding','Migrating through','Roosting','First of season','Last of season','Unusual numbers','Unusually early','Unusually late'],
+  bug:        ['Emerging','Swarming','Mating','Feeding','First of season','Last of season','Large numbers','Unusually early','Unusually late'],
+  fungi:      ['Fruiting body visible','Large flush','Single specimen','Cluster','On wood','On ground','After rain','First of season','Last of season','Unusually early','Unusually late'],
+  water:      ['Running water','Standing water','Drying up','Flooding','Low water level','High water level','Full pools','Dry pools','Clear water','Murky water','First flow of season','Last flow of season'],
+  atmosphere: ['Marine layer / fog','Santa Ana winds','First rain','Unusual heat','Unusual cold','Very humid','Very dry','Smell of sage','Smell of rain (petrichor)','Smell of the ocean','Smoke / fire smell','Clear and still','Gusty','Overcast all day','Unusually clear skies','Vivid sunrise / sunset','First of season'],
+  other:      ['First of season','Last of season','Unusual','Notable abundance','Unusually early','Unusually late'],
+};
+const PLACEHOLDERS = {
+  plant:      'e.g. California poppy, Lupinus nanus, wild mustard…',
+  animal:     'e.g. Allen\'s hummingbird, gray whale, Pacific chorus frog…',
+  bug:        'e.g. monarch butterfly, painted lady, native bee…',
+  fungi:      'e.g. chanterelle, Amanita, turkey tail — or just describe it…',
+  water:      'e.g. Tecolote Creek, a seasonal pool, the San Diego River…',
+  atmosphere: 'e.g. Santa Ana winds, marine layer, first rain…',
+  other:      'Describe what you observed…',
+};
+const SPECIES_LABELS = {
+  plant:      'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
+  animal:     'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
+  bug:        'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
+  fungi:      'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
+  water:      'Which body of water? <span style="font-weight:400;color:#aaa">(name or describe it)</span>',
+  atmosphere: 'What was it? <span style="font-weight:400;color:#aaa">(describe it)</span>',
+  other:      'What did you observe?',
+};
+const TAG_QUESTIONS = {
+  plant:'What was it doing?', animal:'What was it doing?', bug:'What was it doing?',
+  fungi:'What did you notice?', water:'How would you describe the water?',
+  atmosphere:'How would you describe it?', other:'Anything notable?',
+};
+const SHOW_ABUND = { plant:true, animal:true, bug:true, fungi:true, water:false, atmosphere:false, other:false };
+const CAT_LABELS = { plant:'Plant', animal:'Animal', bug:'Bug / insect', fungi:'Fungi', water:'Water', atmosphere:'Atmosphere', other:'Other' };
+
+// ── State ──
+let customTags = [], locMode = 'here', pinLat = '', pinLng = '';
+let leafletMap = null, leafletMarker = null, mapInitialized = false;
+
+const now = new Date();
+function pad(n){ return String(n).padStart(2,'0'); }
+const todayStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+const timeStr  = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+// ── Dots ──
+function updateDots(n){
+  [1,2,3,4].forEach(i => {
+    const d = document.getElementById('d'+i);
+    d.className = 'dot';
+    if(i === n) d.classList.add('active');
+    else if(i < n) d.classList.add('done');
+  });
+}
+
+// ── Step navigation ──
+function goStep(n){
+  [1,2,3,4].forEach(i => document.getElementById('step-'+i).style.display = 'none');
+  document.getElementById('step-success').style.display = 'none';
+  document.getElementById('error-banner').style.display = 'none';
+  document.getElementById('step-'+n).style.display = 'block';
+  updateDots(n);
+  if(n === 2 && locMode === 'map') setTimeout(initMap, 80);
+  if(n === 3) buildBehaviorChips();
+  if(n === 4) buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Category selection ──
+function getCat(){
+  const s = document.querySelector('#cat-chips .chip.sel');
+  return s ? s.dataset.cat : '';
+}
+function selCat(btn, cat){
+  document.querySelectorAll('#cat-chips .chip').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('species-label').innerHTML = SPECIES_LABELS[cat] || 'What did you observe?';
+  document.getElementById('species').placeholder = PLACEHOLDERS[cat] || '';
+  document.getElementById('species-field').style.display = 'block';
+  document.getElementById('abund-field').style.display = SHOW_ABUND[cat] ? 'block' : 'none';
+}
+
+// ── Abundance ──
+function selAbund(btn){
+  document.querySelectorAll('.abund-chip').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+// ── Timestamp ──
+function setTs(mode){
+  document.getElementById('ts-now').classList.toggle('active', mode === 'now');
+  document.getElementById('ts-retro').classList.toggle('active', mode === 'retro');
+  const dateEl = document.getElementById('obs-date');
+  const timeEl = document.getElementById('obs-time');
+  if(mode === 'now'){
+    dateEl.value = todayStr; timeEl.value = timeStr;
+    dateEl.readOnly = true;  timeEl.readOnly = true;
+    document.getElementById('ts-hint').textContent = 'Timestamp locked to right now.';
+  } else {
+    dateEl.value = ''; timeEl.value = '';
+    dateEl.readOnly = false; timeEl.readOnly = false;
+    document.getElementById('ts-hint').textContent = 'Enter the date you observed it — time is optional.';
+  }
+}
+
+// ── Location ──
+function setLoc(mode){
+  locMode = mode;
+  document.getElementById('loc-here').classList.toggle('sel', mode === 'here');
+  document.getElementById('loc-map').classList.toggle('sel', mode === 'map');
+  const hereStatus   = document.getElementById('here-status');
+  const mapContainer = document.getElementById('map-container');
+  const mapHint      = document.getElementById('map-hint');
+  if(mode === 'here'){
+    hereStatus.style.display   = 'block';
+    mapContainer.style.display = 'none';
+    mapHint.style.display      = 'none';
+    hereStatus.textContent     = 'Getting your location…';
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+        p => {
+          pinLat = p.coords.latitude.toFixed(5);
+          pinLng = p.coords.longitude.toFixed(5);
+          hereStatus.textContent = `Location captured (±${Math.round(p.coords.accuracy)}m). Stored privately.`;
+        },
+        () => { hereStatus.textContent = 'Could not get location. Try "Mark on map".'; }
+      );
+    } else {
+      hereStatus.textContent = 'Geolocation unavailable on this device. Try "Mark on map".';
+    }
+  } else {
+    hereStatus.style.display   = 'none';
+    mapContainer.style.display = 'block';
+    mapHint.style.display      = 'block';
+    setTimeout(initMap, 80);
+  }
+}
+
+// ── Leaflet map ──
+function initMap(){
+  if(!window.L) return;
+  document.getElementById('map-loading').style.display = 'none';
+  if(!mapInitialized){
+    leafletMap = L.map('leaflet-map', { zoomControl: true }).setView([32.7157, -117.1611], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(leafletMap);
+    const pinIcon = L.divIcon({
+      className: '',
+      html: '<div style="width:14px;height:14px;border-radius:50%;background:#D85A30;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>',
+      iconAnchor: [7, 7],
+    });
+    leafletMap.on('click', e => {
+      pinLat = e.latlng.lat.toFixed(5);
+      pinLng = e.latlng.lng.toFixed(5);
+      if(leafletMarker){ leafletMarker.setLatLng(e.latlng); }
+      else {
+        leafletMarker = L.marker(e.latlng, { icon: pinIcon, draggable: true }).addTo(leafletMap);
+        leafletMarker.on('dragend', ev => {
+          const ll = ev.target.getLatLng();
+          pinLat = ll.lat.toFixed(5); pinLng = ll.lng.toFixed(5);
+          document.getElementById('map-hint').textContent = `Pin at ${pinLat}°N, ${Math.abs(pinLng)}°W — drag to adjust.`;
+        });
+      }
+      document.getElementById('map-hint').textContent = `Pin at ${pinLat}°N, ${Math.abs(pinLng)}°W — drag to adjust.`;
+    });
+    mapInitialized = true;
+  }
+  setTimeout(() => leafletMap.invalidateSize(), 100);
+}
+
+// ── Chips ──
+function togChip(btn){ btn.classList.toggle('sel'); }
+
+// ── Behavior tags ──
+function buildBehaviorChips(){
+  const cat  = getCat();
+  const tags = TAGS[cat] || TAGS.other;
+  document.getElementById('tag-label').innerHTML =
+    `${TAG_QUESTIONS[cat] || 'What was it doing?'} <span style="font-weight:400;color:#aaa">(optional)</span>`;
+  const wrap = document.getElementById('behavior-chips');
+  wrap.innerHTML = '';
+  tags.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'chip'; b.textContent = t;
+    b.onclick = () => togChip(b);
+    wrap.appendChild(b);
+  });
+  customTags.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'chip sel'; b.textContent = t;
+    b.onclick = () => togChip(b);
+    wrap.appendChild(b);
+  });
+  const suggest = document.createElement('button');
+  suggest.className = 'suggest-btn';
+  suggest.textContent = '+ Suggest a tag';
+  suggest.onclick = () => {
+    document.getElementById('new-tag-wrap').style.display = 'flex';
+    suggest.style.display = 'none';
+  };
+  wrap.appendChild(suggest);
+}
+function addCustomTag(){
+  const val = document.getElementById('new-tag-text').value.trim();
+  if(!val) return;
+  customTags.push(val);
+  document.getElementById('new-tag-text').value = '';
+  document.getElementById('new-tag-wrap').style.display = 'none';
+  buildBehaviorChips();
+}
+
+// ── Photo preview ──
+function photoSelected(input){
+  const name = input.files[0]?.name || '';
+  document.getElementById('photo-name').textContent = name ? `✓ ${name}` : '';
+}
+
+// ── Photo compression ──
+function compressPhoto(file){
+  return new Promise((resolve) => {
+    if(!file.type.startsWith('image/')){ resolve(file); return; }
+    const MAX_WIDTH = 1200;
+    const QUALITY   = 0.82;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let width  = img.width;
+        let height = img.height;
+        if(width > MAX_WIDTH){
+          height = Math.round(height * MAX_WIDTH / width);
+          width  = MAX_WIDTH;
+        }
+        const canvas  = document.createElement('canvas');
+        canvas.width  = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          blob => {
+            const compressed = new File(
+              [blob],
+              file.name.replace(/\.[^.]+$/, '.jpg'),
+              { type: 'image/jpeg' }
+            );
+            console.log(`Photo: ${(file.size/1024).toFixed(0)}KB → ${(compressed.size/1024).toFixed(0)}KB`);
+            resolve(compressed);
+          },
+          'image/jpeg',
+          QUALITY
+        );
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── Photo upload to Supabase Storage ──
+async function uploadPhoto(file){
+  if(!file) return null;
+  const compressed = await compressPhoto(file);
+  const fileName   = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+  const res = await fetch(
+    `${SUPABASE_URL}/storage/v1/object/observation-photos/${fileName}`,
+    {
+      method:  'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type':  'image/jpeg',
+      },
+      body: compressed,
+    }
+  );
+  if(!res.ok){ console.error('Photo upload failed:', await res.text()); return null; }
+  return `${SUPABASE_URL}/storage/v1/object/public/observation-photos/${fileName}`;
+}
+
+// ── Review ──
+function buildReview(){
+  const cat      = getCat();
+  const species  = document.getElementById('species').value;
+  const abund    = document.querySelector('.abund-chip.sel')?.textContent || '';
+  const date     = document.getElementById('obs-date').value;
+  const time     = document.getElementById('obs-time').value;
+  const settings = [...document.querySelectorAll('#setting-chips .chip.sel')].map(b => b.textContent.trim()).join(', ') || '—';
+  const behaviors= [...document.querySelectorAll('#behavior-chips .chip.sel')].map(b => b.textContent.trim()).join(', ') || '—';
+  const desc     = document.getElementById('desc').value;
+  const contrib  = document.getElementById('contributor').value;
+  const loc      = pinLat && pinLng ? `${pinLat}°N, ${Math.abs(pinLng)}°W` : 'Not recorded';
+  const rows = [
+    ['What',        [CAT_LABELS[cat], species].filter(Boolean).join(' — ') || '—'],
+    abund ? ['How many', abund] : null,
+    ['When',        [date, time].filter(Boolean).join(' at ') || '—'],
+    ['Location',    loc],
+    ['Setting',     settings],
+    ['Tags',        behaviors],
+    desc ? ['Notes', desc.length > 120 ? desc.slice(0,120)+'…' : desc] : null,
+    ['Contributor', contrib || 'Anonymous'],
+  ].filter(Boolean);
+  document.getElementById('review-rows').innerHTML = rows.map(([l,v]) =>
+    `<div class="review-row"><span class="rl">${l}</span><span class="rv">${v}</span></div>`
+  ).join('');
+}
+
+// ── Main submit ──
+async function submitForm(){
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Submitting…';
+  btn.disabled    = true;
+  document.getElementById('error-banner').style.display = 'none';
+  try {
+    const cat       = getCat();
+    const species   = document.getElementById('species').value.trim() || null;
+    const abundance = document.querySelector('.abund-chip.sel')?.textContent.trim() || null;
+    const obsDate   = document.getElementById('obs-date').value;
+    const obsTime   = document.getElementById('obs-time').value;
+    const observedAt = obsTime ? `${obsDate}T${obsTime}:00` : `${obsDate}T00:00:00`;
+    const precision  = obsTime ? 'exact' : 'day';
+    const lat        = pinLat ? parseFloat(pinLat) : null;
+    const lng        = pinLng ? parseFloat(pinLng) : null;
+    const settings   = [...document.querySelectorAll('#setting-chips .chip.sel')].map(b => b.textContent.trim());
+    const tags       = [...document.querySelectorAll('#behavior-chips .chip.sel')].map(b => b.textContent.trim());
+    const desc       = document.getElementById('desc').value.trim() || null;
+    const contrib    = document.getElementById('contributor').value.trim() || null;
+    const photoFile  = document.getElementById('photo-input').files[0] || null;
+    const photoUrl   = await uploadPhoto(photoFile);
+
+    const observation = {
+      source:                'direct_entry',
+      category:              cat,
+      species_name:          species,
+      abundance:             abundance,
+      observed_at:           observedAt,
+      observed_at_precision: precision,
+      latitude:              lat,
+      longitude:             lng,
+      location_settings:     settings,
+      behavior_tags:         tags,
+      description:           desc,
+      contributor_handle:    contrib,
+      photo_url:             photoUrl,
+    };
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/observations`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer':        'return=minimal',
+      },
+      body: JSON.stringify(observation),
+    });
+
+    if(!res.ok){
+      const err = await res.text();
+      throw new Error(err);
+    }
+
+    // Success
+    [1,2,3,4].forEach(i => document.getElementById('step-'+i).style.display = 'none');
+    document.getElementById('step-success').style.display = 'block';
+    [1,2,3,4].forEach(i => {
+      document.getElementById('d'+i).className = 'dot done';
+    });
+
+  } catch(err){
+    console.error('Submission error:', err);
+    const banner = document.getElementById('error-banner');
+    banner.textContent = 'Something went wrong — please try again. Your data has not been lost.';
+    banner.style.display = 'block';
+    btn.textContent = 'Submit ✓';
+    btn.disabled    = false;
+  }
+}
+
+// ── Reset ──
+function resetForm(){
+  customTags = []; pinLat = ''; pinLng = '';
+  if(leafletMarker && leafletMap){ leafletMap.removeLayer(leafletMarker); leafletMarker = null; }
+  ['species','desc','contributor'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('photo-input').value = '';
+  document.getElementById('photo-name').textContent = '';
+  document.querySelectorAll('.chip.sel').forEach(c => c.classList.remove('sel'));
+  document.querySelectorAll('.abund-chip.sel').forEach(c => c.classList.remove('sel'));
+  document.getElementById('species-field').style.display = 'none';
+  document.getElementById('abund-field').style.display   = 'none';
+  document.getElementById('map-hint').textContent = 'Tap the map to place a pin. Drag it to adjust.';
+  setTs('now');
+  setLoc('here');
+  goStep(1);
+}
+
+// ── Init ──
+setTs('now');
+setLoc('here');
+updateDots(1);
+
+</script>
+</body>
+</html>

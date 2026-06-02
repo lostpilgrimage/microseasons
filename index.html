@@ -54,6 +54,47 @@
   }
   .btn-back:hover { background: #f5f5f5; }
   .chip-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  #cat-chips {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  #abund-field .abund-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .a-chip {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: flex-end; gap: 6px;
+    padding: 10px 6px 10px; border: 0.5px solid #ccc;
+    border-radius: 12px; cursor: pointer; background: #fff;
+    font-size: 12px; color: #666; font-family: inherit;
+    transition: background .1s, color .1s, border-color .1s;
+    min-height: 80px; user-select: none;
+  }
+  .a-chip:hover { border-color: #888; background: #f9f9f7; }
+  .a-chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
+  .a-chip svg { display: block; flex-shrink: 0; }
+  #setting-chips {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .s-chip {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: flex-end; gap: 6px;
+    padding: 10px 6px 10px; border: 0.5px solid #ccc;
+    border-radius: 12px; cursor: pointer; background: #fff;
+    font-size: 12px; color: #666; font-family: inherit;
+    transition: background .1s, color .1s, border-color .1s;
+    min-height: 88px; user-select: none;
+  }
+  .s-chip:hover { border-color: #888; background: #f9f9f7; }
+  .s-chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
+  .s-chip svg { display: block; flex-shrink: 0; }
+  .s-chip.sel svg { filter: invert(1); }
+  .a-chip.sel svg { filter: invert(1); }
   .chip {
     padding: 8px 14px; font-size: 13px; border-radius: 999px;
     border: 0.5px solid #ccc; cursor: pointer; background: #fff;
@@ -61,7 +102,16 @@
     font-family: inherit; transition: background .1s, color .1s, border-color .1s;
   }
   .chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
-  .cat-chip { padding: 10px 16px; font-size: 14px; }
+  .cat-chip { font-size: 12px; }
+  /* shake animation for validation */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+  .shake { animation: shake .35s ease; outline: 1.5px solid #c33 !important; border-radius: 8px; }
   .step-dots { display: flex; gap: 6px; margin-bottom: 1.5rem; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: #ddd; transition: all .2s; }
   .dot.active { background: #1a1a1a; width: 18px; border-radius: 3px; }
@@ -102,13 +152,46 @@
   }
   .ts-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; font-weight: 500; }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .abund-row { display: flex; gap: 6px; }
-  .abund-chip {
-    flex: 1; padding: 7px 4px; font-size: 12px; border: 0.5px solid #ccc;
-    border-radius: 8px; cursor: pointer; background: #fff; color: #666;
-    text-align: center; font-family: inherit; transition: background .1s, color .1s;
+  /* Locked timestamp display (shown in "Right now" mode) */
+  .ts-locked {
+    background: #f5f5f3; border: 0.5px solid #e0e0da;
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 14px; color: #888; display: flex;
+    align-items: center; gap: 6px; height: 37px; box-sizing: border-box;
   }
-  .abund-chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
+  .ts-locked .lock-icon { font-size: 11px; }
+  /* Retro date/time inputs styled to match locked display */
+  #obs-date-retro {
+    background: #f5f5f3; border: 0.5px solid #e0e0da;
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 14px; color: #1a1a1a;
+    width: 100%; font-family: inherit;
+    box-sizing: border-box; height: 37px; line-height: 1;
+  }
+  #obs-date-retro:focus { outline: none; border-color: #888; background: #fff; }
+  #obs-time-retro {
+    background: #f5f5f3; border: 0.5px solid #e0e0da;
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 14px; color: #888;
+    width: 100%; font-family: inherit;
+    box-sizing: border-box; height: 37px; line-height: 1;
+  }
+  #obs-time-retro:focus { outline: none; border-color: #888; background: #fff; color: #1a1a1a; }
+  #obs-time-now {
+    background: #f5f5f3; border: 0.5px solid #e0e0da;
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 14px; color: #1a1a1a;
+    width: 100%; font-family: inherit;
+    box-sizing: border-box; height: 37px; line-height: 1;
+  }
+  #obs-time-now:focus { outline: none; border-color: #888; background: #fff; }
+  /* Time reveal toggle */
+  .time-reveal-link {
+    font-size: 11px; color: #aaa; cursor: pointer;
+    text-decoration: underline; display: inline-block; margin-top: 5px;
+  }
+  .time-reveal-link:hover { color: #666; }
+  .abund-row { display: flex; gap: 6px; }
   .new-tag-row { display: none; flex-direction: row; gap: 6px; align-items: center; margin-top: 8px; }
   .new-tag-row input { font-size: 13px; padding: 6px 10px; }
   .new-tag-row button {
@@ -164,14 +247,163 @@
   <div id="step-1">
     <div class="field">
       <label>What kind of thing?</label>
+      <!-- TO SWAP: replace each <svg>…</svg> with <img src="your-image.jpg" width="52" height="38" style="border-radius:4px;object-fit:cover"> -->
       <div class="chip-grid" id="cat-chips">
-        <button class="chip cat-chip" data-cat="plant"      onclick="selCat(this,'plant')">🌿 Plant</button>
-        <button class="chip cat-chip" data-cat="animal"     onclick="selCat(this,'animal')">🐾 Animal</button>
-        <button class="chip cat-chip" data-cat="bug"        onclick="selCat(this,'bug')">🐛 Bug / insect</button>
-        <button class="chip cat-chip" data-cat="fungi"      onclick="selCat(this,'fungi')">🍄 Fungi</button>
-        <button class="chip cat-chip" data-cat="water"      onclick="selCat(this,'water')">💧 Water</button>
-        <button class="chip cat-chip" data-cat="atmosphere" onclick="selCat(this,'atmosphere')">🌤 Atmosphere</button>
-        <button class="chip cat-chip" data-cat="other"      onclick="selCat(this,'other')">· · · Other</button>
+
+        <!-- Plant -->
+        <button class="s-chip chip cat-chip" data-cat="plant" onclick="selCat(this,'plant')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#daecd0" class="if"/>
+            <rect x="0" y="30" width="52" height="8" fill="#b8d898" class="if"/>
+            <line x1="26" y1="36" x2="26" y2="18" stroke="#5a8830" stroke-width="2" stroke-linecap="round" class="il"/>
+            <path d="M26 26 Q18 20 14 22" stroke="#5a8830" stroke-width="1.5" fill="none" stroke-linecap="round" class="il"/>
+            <path d="M26 22 Q34 16 38 18" stroke="#5a8830" stroke-width="1.5" fill="none" stroke-linecap="round" class="il"/>
+            <ellipse cx="12" cy="21" rx="5" ry="3.5" fill="#78b848" class="if"/>
+            <ellipse cx="40" cy="17" rx="5" ry="3.5" fill="#78b848" class="if"/>
+            <ellipse cx="26" cy="12" rx="7" ry="5" fill="#e85878" class="if"/>
+            <ellipse cx="26" cy="12" rx="4" ry="3" fill="#f87898" class="if"/>
+            <circle cx="26" cy="12" r="1.5" fill="#f8d860" class="if"/>
+          </svg>
+          Plant
+        </button>
+
+        <!-- Animal -->
+        <button class="s-chip chip cat-chip" data-cat="animal" onclick="selCat(this,'animal')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#e8f0d8" class="if"/>
+            <rect x="0" y="30" width="52" height="8" fill="#c0d898" class="if"/>
+            <ellipse cx="26" cy="22" rx="10" ry="7" fill="#c8a870" class="if"/>
+            <ellipse cx="36" cy="18" rx="6" ry="5" fill="#d0b080" class="if"/>
+            <ellipse cx="38" cy="13" rx="2" ry="3" fill="#c0a070" class="if"/>
+            <ellipse cx="38" cy="13" rx="1.2" ry="2" fill="#e8c0b0" class="if"/>
+            <line x1="18" y1="28" x2="15" y2="36" stroke="#a88050" stroke-width="2" stroke-linecap="round" class="il"/>
+            <line x1="22" y1="29" x2="20" y2="36" stroke="#a88050" stroke-width="2" stroke-linecap="round" class="il"/>
+            <line x1="30" y1="29" x2="30" y2="36" stroke="#a88050" stroke-width="2" stroke-linecap="round" class="il"/>
+            <line x1="34" y1="28" x2="36" y2="35" stroke="#a88050" stroke-width="2" stroke-linecap="round" class="il"/>
+            <path d="M16 22 Q10 18 12 14" stroke="#b89060" stroke-width="1.5" fill="none" stroke-linecap="round" class="il"/>
+            <circle cx="38" cy="17" r="1.2" fill="#302820" class="if"/>
+            <circle cx="38.5" cy="16.5" r="0.4" fill="#fff" class="if"/>
+          </svg>
+          Animal
+        </button>
+
+        <!-- Bug -->
+        <button class="s-chip chip cat-chip" data-cat="bug" onclick="selCat(this,'bug')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#e8f0e0" class="if"/>
+            <ellipse cx="18" cy="18" rx="9" ry="6" fill="#b8d8f0" class="if"/>
+            <ellipse cx="34" cy="18" rx="9" ry="6" fill="#b8d8f0" class="if"/>
+            <ellipse cx="17" cy="22" rx="7" ry="5" fill="#c8e8f8" class="if"/>
+            <ellipse cx="35" cy="22" rx="7" ry="5" fill="#c8e8f8" class="if"/>
+            <line x1="22" y1="14" x2="18" y2="22" stroke="#90b8d0" stroke-width="0.5" class="il"/>
+            <line x1="26" y1="14" x2="22" y2="23" stroke="#90b8d0" stroke-width="0.5" class="il"/>
+            <ellipse cx="26" cy="16" rx="3" ry="4" fill="#e05030" class="if"/>
+            <ellipse cx="26" cy="23" rx="4" ry="5" fill="#c04020" class="if"/>
+            <circle cx="24" cy="22" r="1.5" fill="#1a1a1a" class="if"/>
+            <circle cx="28" cy="24" r="1.5" fill="#1a1a1a" class="if"/>
+            <circle cx="24" cy="26" r="1.2" fill="#1a1a1a" class="if"/>
+            <circle cx="26" cy="12" r="3" fill="#1a1a1a" class="if"/>
+            <line x1="24" y1="10" x2="20" y2="6" stroke="#404040" stroke-width="0.8" class="il"/>
+            <line x1="28" y1="10" x2="32" y2="6" stroke="#404040" stroke-width="0.8" class="il"/>
+            <circle cx="20" cy="5.5" r="1" fill="#404040" class="if"/>
+            <circle cx="32" cy="5.5" r="1" fill="#404040" class="if"/>
+          </svg>
+          Bug
+        </button>
+
+        <!-- Fungi -->
+        <button class="s-chip chip cat-chip" data-cat="fungi" onclick="selCat(this,'fungi')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#eae4d8" class="if"/>
+            <rect x="0" y="30" width="52" height="8" fill="#c8b888" class="if"/>
+            <rect x="23" y="22" width="6" height="10" rx="2" fill="#e8d8b8" class="if"/>
+            <ellipse cx="26" cy="20" rx="13" ry="5" fill="#c84020" class="if"/>
+            <path d="M13 20 Q16 10 26 8 Q36 10 39 20" fill="#d85030" stroke="none" class="if"/>
+            <circle cx="20" cy="14" r="2" fill="#f0f0e8" class="if"/>
+            <circle cx="26" cy="11" r="2.5" fill="#f0f0e8" class="if"/>
+            <circle cx="32" cy="14" r="2" fill="#f0f0e8" class="if"/>
+            <circle cx="23" cy="18" r="1.5" fill="#f0f0e8" class="if"/>
+            <circle cx="30" cy="17" r="1.5" fill="#f0f0e8" class="if"/>
+            <line x1="16" y1="20" x2="18" y2="22" stroke="#b83010" stroke-width="0.6" class="il"/>
+            <line x1="20" y1="21" x2="21" y2="23" stroke="#b83010" stroke-width="0.6" class="il"/>
+            <line x1="26" y1="21" x2="26" y2="23" stroke="#b83010" stroke-width="0.6" class="il"/>
+            <line x1="32" y1="21" x2="31" y2="23" stroke="#b83010" stroke-width="0.6" class="il"/>
+            <line x1="36" y1="20" x2="34" y2="22" stroke="#b83010" stroke-width="0.6" class="il"/>
+          </svg>
+          Fungi
+        </button>
+
+        <!-- Water -->
+        <button class="s-chip chip cat-chip" data-cat="water" onclick="selCat(this,'water')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#c8e0f0" class="if"/>
+            <path d="M26 6 Q34 16 34 24 Q34 32 26 32 Q18 32 18 24 Q18 16 26 6Z" fill="#4898d0" class="if"/>
+            <path d="M26 6 Q30 14 30 22 Q30 28 26 30" stroke="#70b8e8" stroke-width="1.5" fill="none" stroke-linecap="round" class="il"/>
+            <ellipse cx="26" cy="34" rx="8" ry="2.5" fill="none" stroke="#70b0d0" stroke-width="0.8" class="il"/>
+            <ellipse cx="26" cy="34" rx="12" ry="3.5" fill="none" stroke="#70b0d0" stroke-width="0.5" class="il"/>
+          </svg>
+          Water
+        </button>
+
+        <!-- Land -->
+        <button class="s-chip chip cat-chip" data-cat="land" onclick="selCat(this,'land')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#ede4d4" class="if"/>
+            <path d="M0 28 Q14 22 28 26 Q40 30 52 24 L52 38 L0 38 Z" fill="#d4b880" class="if"/>
+            <path d="M0 32 Q12 28 26 31 Q38 34 52 30 L52 38 L0 38 Z" fill="#c4a868" class="if"/>
+            <path d="M0 20 Q10 16 20 19 Q30 22 40 17 Q46 14 52 17" stroke="#c0a060" stroke-width="0.6" fill="none" class="il"/>
+            <line x1="18" y1="26" x2="18" y2="20" stroke="#a08040" stroke-width="1" stroke-linecap="round" class="il"/>
+            <line x1="18" y1="22" x2="14" y2="20" stroke="#a08040" stroke-width="0.8" stroke-linecap="round" class="il"/>
+            <line x1="30" y1="24" x2="30" y2="16" stroke="#a08040" stroke-width="1" stroke-linecap="round" class="il"/>
+            <line x1="30" y1="19" x2="26" y2="17" stroke="#a08040" stroke-width="0.8" stroke-linecap="round" class="il"/>
+            <line x1="30" y1="21" x2="34" y2="19" stroke="#a08040" stroke-width="0.8" stroke-linecap="round" class="il"/>
+            <ellipse cx="10" cy="18" rx="5" ry="3" fill="#b8c890" class="if"/>
+            <ellipse cx="44" cy="16" rx="5" ry="3" fill="#b8c890" class="if"/>
+            <path d="M6 20 Q8 16 10 14 Q12 16 14 20" fill="#a0b070" stroke="none" class="if"/>
+            <circle cx="40" cy="7" r="4" fill="#f8d040" class="if"/>
+            <line x1="40" y1="1" x2="40" y2="0" stroke="#f0c020" stroke-width="1" class="il"/>
+            <line x1="45" y1="3" x2="46" y2="2" stroke="#f0c020" stroke-width="1" class="il"/>
+            <line x1="35" y1="3" x2="34" y2="2" stroke="#f0c020" stroke-width="1" class="il"/>
+          </svg>
+          Land
+        </button>
+
+        <!-- Atmosphere -->
+        <button class="s-chip chip cat-chip" data-cat="atmosphere" onclick="selCat(this,'atmosphere')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#d0e8f8" class="if"/>
+            <circle cx="38" cy="10" r="5" fill="#f8d040" class="if"/>
+            <line x1="38" y1="3" x2="38" y2="2" stroke="#f0c020" stroke-width="1.2" class="il"/>
+            <line x1="43" y1="5" x2="44" y2="4" stroke="#f0c020" stroke-width="1.2" class="il"/>
+            <line x1="45" y1="10" x2="46" y2="10" stroke="#f0c020" stroke-width="1.2" class="il"/>
+            <line x1="33" y1="5" x2="32" y2="4" stroke="#f0c020" stroke-width="1.2" class="il"/>
+            <ellipse cx="20" cy="20" rx="12" ry="7" fill="#f0f4f8" class="if"/>
+            <ellipse cx="14" cy="22" rx="7" ry="6" fill="#e8f0f8" class="if"/>
+            <ellipse cx="27" cy="22" rx="7" ry="5" fill="#e8f0f8" class="if"/>
+            <ellipse cx="20" cy="15" rx="8" ry="6" fill="#f4f8fc" class="if"/>
+            <path d="M6 30 Q12 28 18 30" stroke="#a0c0d8" stroke-width="1" fill="none" stroke-linecap="round" class="il"/>
+            <path d="M26 32 Q34 30 42 32" stroke="#a0c0d8" stroke-width="1" fill="none" stroke-linecap="round" class="il"/>
+            <path d="M32 27 Q38 25 44 27" stroke="#a0c0d8" stroke-width="0.8" fill="none" stroke-linecap="round" class="il"/>
+          </svg>
+          Atmosphere
+        </button>
+
+        <!-- Other -->
+        <button class="s-chip chip cat-chip" data-cat="other" onclick="selCat(this,'other')">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none">
+            <rect width="52" height="38" rx="4" fill="#eceae4" class="if"/>
+            <circle cx="16" cy="14" r="6" fill="#c8b8d8" class="if"/>
+            <path d="M13 11 Q16 8 19 11 Q16 14 13 11Z" fill="#b0a0c8" class="if"/>
+            <circle cx="34" cy="24" r="7" fill="#b8d0c8" class="if"/>
+            <rect x="30" y="20" width="8" height="8" rx="1" fill="#98c0b8" class="if"/>
+            <polygon points="18,28 24,20 30,28" fill="#d8c890" class="if"/>
+            <polygon points="20,28 24,22 28,28" fill="#c8b878" class="if"/>
+            <circle cx="16" cy="14" r="2" fill="#f8f0f8" class="if"/>
+            <circle cx="34" cy="24" r="2.5" fill="#d8f0e8" class="if"/>
+          </svg>
+          Other
+        </button>
+
       </div>
     </div>
     <div class="field" id="species-field" style="display:none">
@@ -181,10 +413,73 @@
     <div class="field" id="abund-field" style="display:none">
       <label>How many?</label>
       <div class="abund-row">
-        <button class="abund-chip" onclick="selAbund(this)">One</button>
-        <button class="abund-chip" onclick="selAbund(this)">A few</button>
-        <button class="abund-chip" onclick="selAbund(this)">Many</button>
-        <button class="abund-chip" onclick="selAbund(this)">Loads</button>
+
+        <!-- One -->
+        <button class="a-chip abund-chip" onclick="selAbund(this)">
+          <svg width="44" height="32" viewBox="0 0 44 32" fill="none">
+            <rect width="44" height="32" rx="4" fill="#eef4ee" class="if"/>
+            <circle cx="24" cy="18" r="7" fill="#4a8830" class="if"/>
+            <circle cx="24" cy="15" r="2.5" fill="#80c060" class="if"/>
+          </svg>
+          One
+        </button>
+
+        <!-- A few -->
+        <button class="a-chip abund-chip" onclick="selAbund(this)">
+          <svg width="44" height="32" viewBox="0 0 44 32" fill="none">
+            <rect width="44" height="32" rx="4" fill="#eef4ee" class="if"/>
+            <circle cx="9"  cy="22" r="4.5" fill="#6aac50" class="if"/>
+            <circle cx="9"  cy="19.5" r="1.5" fill="#98d070" class="if"/>
+            <circle cx="28" cy="10" r="7"   fill="#4a8830" class="if"/>
+            <circle cx="28" cy="7"  r="2.4" fill="#78b858" class="if"/>
+            <circle cx="38" cy="24" r="4"   fill="#5a9840" class="if"/>
+            <circle cx="38" cy="21.5" r="1.3" fill="#88c868" class="if"/>
+          </svg>
+          A few
+        </button>
+
+        <!-- Many -->
+        <button class="a-chip abund-chip" onclick="selAbund(this)">
+          <svg width="44" height="32" viewBox="0 0 44 32" fill="none">
+            <rect width="44" height="32" rx="4" fill="#eef4ee" class="if"/>
+            <circle cx="5"  cy="26" r="3.5" fill="#80c060" class="if"/>
+            <circle cx="16" cy="22" r="5.5" fill="#6aac50" class="if"/>
+            <circle cx="16" cy="19.5" r="1.8" fill="#90d070" class="if"/>
+            <circle cx="30" cy="26" r="4"   fill="#70b850" class="if"/>
+            <circle cx="40" cy="20" r="3"   fill="#88c060" class="if"/>
+            <circle cx="10" cy="11" r="6"   fill="#4a8830" class="if"/>
+            <circle cx="10" cy="8"  r="2"   fill="#78b858" class="if"/>
+            <circle cx="32" cy="12" r="5"   fill="#5a9840" class="if"/>
+            <circle cx="32" cy="9.5" r="1.6" fill="#80c068" class="if"/>
+          </svg>
+          Many
+        </button>
+
+        <!-- Loads -->
+        <button class="a-chip abund-chip" onclick="selAbund(this)">
+          <svg width="44" height="32" viewBox="0 0 44 32" fill="none">
+            <rect width="44" height="32" rx="4" fill="#eef4ee" class="if"/>
+            <circle cx="2"  cy="28" r="4"   fill="#88c868" class="if"/>
+            <circle cx="12" cy="30" r="3.5" fill="#6aac50" class="if"/>
+            <circle cx="22" cy="27" r="5"   fill="#5a9840" class="if"/>
+            <circle cx="35" cy="29" r="3"   fill="#70b850" class="if"/>
+            <circle cx="44" cy="26" r="4.5" fill="#6aac50" class="if"/>
+            <circle cx="4"  cy="17" r="5.5" fill="#4a8830" class="if"/>
+            <circle cx="4"  cy="14.5" r="1.8" fill="#88d068" class="if"/>
+            <circle cx="16" cy="14" r="6"   fill="#3a7820" class="if"/>
+            <circle cx="16" cy="11" r="2"   fill="#78b858" class="if"/>
+            <circle cx="29" cy="16" r="5"   fill="#4a8830" class="if"/>
+            <circle cx="29" cy="13.5" r="1.6" fill="#80c060" class="if"/>
+            <circle cx="40" cy="11" r="6.5" fill="#3a7820" class="if"/>
+            <circle cx="40" cy="8"  r="2.2" fill="#70b050" class="if"/>
+            <circle cx="9"  cy="4"  r="4"   fill="#5a9840" class="if"/>
+            <circle cx="24" cy="5"  r="3.5" fill="#6aac50" class="if"/>
+            <circle cx="44" cy="4"  r="3"   fill="#5a9840" class="if"/>
+            <circle cx="0"  cy="8"  r="3"   fill="#78b848" class="if"/>
+          </svg>
+          Loads
+        </button>
+
       </div>
     </div>
     <div class="btn-row">
@@ -201,20 +496,61 @@
         <button class="ts-pill active" id="ts-now"   onclick="setTs('now')">Right now</button>
         <button class="ts-pill"        id="ts-retro" onclick="setTs('retro')">Another time</button>
       </div>
-      <div class="row2">
-        <div>
-          <label style="font-size:11px;margin-bottom:3px">Date</label>
-          <input type="date" id="obs-date">
-        </div>
-        <div>
-          <label style="font-size:11px;margin-bottom:3px">Time <span style="font-weight:400;color:#aaa">(optional)</span></label>
-          <select id="obs-time"></select>
+
+      <!-- "Right now" locked display -->
+      <div id="ts-now-display">
+        <div class="row2">
+          <div>
+            <label style="font-size:11px;margin-bottom:3px">Date</label>
+            <div class="ts-locked" id="locked-date-display">—</div>
+          </div>
+          <div>
+            <label style="font-size:11px;margin-bottom:3px">Time</label>
+            <div class="ts-locked" id="locked-time-display"><span id="locked-time-text">—</span></div>
+            <span class="time-reveal-link" style="visibility:hidden;pointer-events:none">placeholder</span>
+          </div>
         </div>
       </div>
-      <div class="hint" id="ts-hint">Timestamp locked to right now.</div>
+
+      <!-- "Another time" editable display -->
+      <div id="ts-retro-display" style="display:none">
+        <div class="row2">
+          <div>
+            <label style="font-size:11px;margin-bottom:3px">Date</label>
+            <div style="position:relative">
+              <input type="date" id="obs-date-retro" onchange="updateDatePlaceholder(this)">
+              <span id="date-placeholder" style="
+                position:absolute; inset:0; pointer-events:none;
+                display:flex; align-items:center; padding:0 10px;
+                font-size:14px; color:#aaa; border-radius:8px;
+                background:#f5f5f3;
+              ">MM/DD/YYYY</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:11px;margin-bottom:3px" id="time-col-label">Time <span style="font-weight:400;color:#aaa">(optional)</span></label>
+            <!-- Slot dropdown — shown by default -->
+            <div id="time-slot-wrap">
+              <select id="obs-time-retro"></select>
+              <span class="time-reveal-link" id="exact-time-toggle" onclick="toggleExactTime()">I know the exact time →</span>
+            </div>
+            <!-- Exact time input — hidden until toggled -->
+            <div id="exact-time-row" style="display:none;">
+              <input type="time" id="obs-time-now" placeholder="HH:MM">
+              <span class="time-reveal-link" id="exact-time-back" onclick="revertToSlot()" style="margin-top:4px">← Use approximate time</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden fields used by submit -->
+      <input type="hidden" id="obs-date">
+      <input type="hidden" id="obs-time">
+
+
     </div>
 
-    <hr class="divider">
+    <hr class="divider" style="margin: 0.5rem 0">
 
     <div class="field">
       <label>Where?</label>
@@ -239,22 +575,374 @@
     </div>
 
     <div class="field">
-      <label>Setting <span style="font-weight:400;color:#aaa">(pick any that fit)</span></label>
+      <label>Setting <span style="font-weight:400;color:#aaa">(pick at least one)</span></label>
       <div class="chip-grid" id="setting-chips">
-        <button class="chip" onclick="togChip(this)">Canyon</button>
-        <button class="chip" onclick="togChip(this)">Beach</button>
-        <button class="chip" onclick="togChip(this)">Shoreline / bluff</button>
-        <button class="chip" onclick="togChip(this)">Chaparral</button>
-        <button class="chip" onclick="togChip(this)">Wetland / estuary</button>
-        <button class="chip" onclick="togChip(this)">Park / open space</button>
-        <button class="chip" onclick="togChip(this)">Urban / backyard</button>
-        <button class="chip" onclick="togChip(this)">Creek / riparian</button>
-        <button class="chip" onclick="togChip(this)">Bay / harbor</button>
-        <button class="chip" onclick="togChip(this)">Offshore</button>
-        <button class="chip" onclick="togChip(this)">Mesa / plateau</button>
-        <button class="chip" onclick="togChip(this)">Desert</button>
-        <button class="chip" onclick="togChip(this)">Mountain</button>
-        <button class="chip" onclick="togChip(this)">Oak woodland</button>
+
+        <!-- TO SWAP: replace each <svg>…</svg> with <img src="your-image.jpg" width="52" height="38" style="border-radius:4px;object-fit:cover"> -->
+
+        <!-- Open ocean -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#b8d0e8" class="if"/>
+            <rect x="0" y="16" width="52" height="22" fill="#5090c0" class="if"/>
+            <path d="M0 16 Q8 12 16 16 Q24 20 32 15 Q42 10 52 15" stroke="#3878a8" stroke-width="1" fill="none" class="il"/>
+            <path d="M0 22 Q10 19 20 22 Q30 25 40 21 Q46 19 52 22" stroke="#3878a8" stroke-width="0.8" fill="none" class="il"/>
+            <path d="M0 28 Q10 25 20 28 Q30 31 40 27 Q46 25 52 28" stroke="#3878a8" stroke-width="0.6" fill="none" class="il"/>
+            <rect x="22" y="10" width="2" height="10" fill="#807070" class="if"/>
+            <path d="M16 16 Q20 12 24 16 Q28 20 32 16" fill="#d8c888" stroke="#b0a860" stroke-width="0.5" class="if"/>
+            <rect x="20" y="14" width="6" height="4" fill="#c8c0b0" class="if"/>
+            <ellipse cx="10" cy="6" rx="6" ry="3" fill="#e8f0f8" class="if"/>
+            <ellipse cx="16" cy="5" rx="5" ry="2.5" fill="#f0f4fa" class="if"/>
+            <ellipse cx="38" cy="8" rx="5" ry="2.5" fill="#e0eaf4" class="if"/>
+          </svg>
+          Open ocean
+        </button>
+
+        <!-- Kelp forest / reef -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#b8d8e8" class="if"/>
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#6098b8" class="if"/>
+            <rect x="0" y="28" width="52" height="10" fill="#504838" class="if"/>
+            <ellipse cx="10" cy="28" rx="6" ry="3" fill="#686050" class="if"/>
+            <ellipse cx="28" cy="28" rx="8" ry="4" fill="#585040" class="if"/>
+            <ellipse cx="44" cy="28" rx="5" ry="3" fill="#686050" class="if"/>
+            <path d="M10 28 Q8 20 10 12 Q12 20 14 28" fill="#50902a" stroke="none" class="if"/>
+            <path d="M10 20 Q6 16 4 18" stroke="#408020" stroke-width="1" fill="none" class="il"/>
+            <path d="M10 16 Q14 12 16 14" stroke="#408020" stroke-width="1" fill="none" class="il"/>
+            <path d="M22 28 Q20 18 22 8 Q24 18 26 28" fill="#60a830" stroke="none" class="if"/>
+            <path d="M22 22 Q18 18 16 20" stroke="#50901e" stroke-width="1" fill="none" class="il"/>
+            <path d="M22 15 Q26 10 28 13" stroke="#50901e" stroke-width="1" fill="none" class="il"/>
+            <path d="M36 28 Q34 20 36 10 Q38 20 40 28" fill="#508828" stroke="none" class="if"/>
+            <path d="M36 20 Q32 16 30 18" stroke="#408020" stroke-width="1" fill="none" class="il"/>
+            <path d="M36 14 Q40 10 42 13" stroke="#408020" stroke-width="1" fill="none" class="il"/>
+            <ellipse cx="16" cy="22" rx="2.5" ry="1.5" fill="#f0a830" class="if"/>
+            <ellipse cx="32" cy="18" rx="2" ry="1.5" fill="#e89820" class="if"/>
+            <circle cx="44" cy="14" r="2" fill="#e06020" class="if"/>
+            <path d="M6 10 Q10 8 14 10" stroke="#90c8e0" stroke-width="0.6" fill="none" class="il"/>
+            <path d="M30 6 Q34 4 38 6" stroke="#90c8e0" stroke-width="0.6" fill="none" class="il"/>
+          </svg>
+          Kelp forest / reef
+        </button>
+
+        <!-- Bay / harbor -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#c8dce8" class="if"/>
+            <path d="M0 16 Q10 12 20 16 Q30 20 40 15 Q46 12 52 15 L52 38 L0 38 Z" fill="#7aaac8" class="if"/>
+            <path d="M0 20 Q8 17 16 20 Q24 23 32 20 Q42 16 52 19" stroke="#5a90b0" stroke-width="0.8" fill="none" class="il"/>
+            <path d="M0 26 Q10 23 20 26 Q30 29 40 25 Q46 23 52 25" stroke="#5a90b0" stroke-width="0.6" fill="none" class="il"/>
+            <rect x="18" y="8" width="2" height="12" fill="#806050" class="if"/>
+            <polygon points="20,8 20,14 28,11" fill="#d04030" class="if"/>
+            <path d="M14 20 Q18 16 22 20 Q26 24 30 20" fill="#d8c8a0" stroke="#b0a080" stroke-width="0.5" class="if"/>
+            <ellipse cx="38" cy="10" rx="5" ry="3" fill="#e0e8f0" class="if"/>
+            <ellipse cx="44" cy="9" rx="4" ry="2.5" fill="#e8f0f8" class="if"/>
+            <circle cx="10" cy="8" r="2.5" fill="#f8d860" class="if"/>
+          </svg>
+          Bay / harbor
+        </button>
+
+        <!-- Shoreline / bluff -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#ccdde8" class="if"/>
+            <rect x="0" y="20" width="52" height="18" fill="#6aaac0" class="if"/>
+            <path d="M0 20 Q10 17 20 20 Q30 23 40 19 Q46 17 52 20" stroke="#5090a8" stroke-width="1" fill="none" class="il"/>
+            <polygon points="0,20 0,38 30,38 30,20 20,14 10,18" fill="#c8b890" class="if"/>
+            <polygon points="20,14 30,20 30,38 22,38" fill="#b0a078" class="if"/>
+            <line x1="0" y1="16" x2="20" y2="14" stroke="#a09060" stroke-width="0.6" class="il"/>
+            <path d="M30 14 Q36 12 42 16 Q46 18 52 16" fill="#b8c8a0" stroke="none" class="if"/>
+            <ellipse cx="36" cy="13" rx="4" ry="2.5" fill="#98b878" class="if"/>
+            <ellipse cx="44" cy="14" rx="3" ry="2" fill="#98b878" class="if"/>
+          </svg>
+          Shoreline / bluff
+        </button>
+
+        <!-- Beach -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#d4e8f0" class="if"/>
+            <rect x="0" y="18" width="52" height="12" fill="#7bb8d0" class="if"/>
+            <path d="M0 20 Q8 17 16 20 Q24 23 32 20 Q40 17 52 20" stroke="#5a9ab5" stroke-width="1.2" fill="none" class="il"/>
+            <path d="M0 24 Q10 21 20 24 Q30 27 40 24 Q46 22 52 24" stroke="#5a9ab5" stroke-width="0.8" fill="none" class="il"/>
+            <rect x="0" y="30" width="52" height="8" fill="#e8d8a8" class="if"/>
+            <line x1="4" y1="33" x2="14" y2="33" stroke="#d4c090" stroke-width="0.6" class="il"/>
+            <line x1="20" y1="34" x2="32" y2="34" stroke="#d4c090" stroke-width="0.6" class="il"/>
+            <line x1="38" y1="33" x2="48" y2="33" stroke="#d4c090" stroke-width="0.6" class="il"/>
+            <circle cx="40" cy="8" r="4" fill="#f0c84a" class="if"/>
+            <path d="M10 10 Q12 8 14 10" stroke="#6a8a9a" stroke-width="0.8" fill="none" class="il"/>
+            <path d="M17 8 Q19 6 21 8" stroke="#6a8a9a" stroke-width="0.8" fill="none" class="il"/>
+          </svg>
+          Beach
+        </button>
+
+        <!-- Coastal wetland -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#d0e8e0" class="if"/>
+            <rect x="0" y="24" width="52" height="14" fill="#7ab8c8" class="if"/>
+            <path d="M0 24 Q8 21 16 24 Q24 27 32 24 Q42 20 52 24" stroke="#5aa0b0" stroke-width="0.8" fill="none" class="il"/>
+            <path d="M6 36 Q6 24 6 22" stroke="#5a8060" stroke-width="1.4" fill="none" class="il"/>
+            <path d="M6 24 Q3 21 1 22" stroke="#5a8060" stroke-width="1" fill="none" class="il"/>
+            <path d="M6 26 Q9 23 11 24" stroke="#5a8060" stroke-width="1" fill="none" class="il"/>
+            <path d="M14 36 Q14 22 14 19" stroke="#4a7050" stroke-width="1.4" fill="none" class="il"/>
+            <path d="M14 22 Q11 18 9 20" stroke="#4a7050" stroke-width="1" fill="none" class="il"/>
+            <path d="M14 25 Q17 21 19 23" stroke="#4a7050" stroke-width="1" fill="none" class="il"/>
+            <path d="M26 36 Q26 24 26 21" stroke="#5a8060" stroke-width="1.4" fill="none" class="il"/>
+            <path d="M26 23 Q23 19 21 21" stroke="#5a8060" stroke-width="1" fill="none" class="il"/>
+            <path d="M26 26 Q29 22 31 24" stroke="#5a8060" stroke-width="1" fill="none" class="il"/>
+            <ellipse cx="40" cy="18" rx="6" ry="3" fill="#a8c890" class="if"/>
+            <ellipse cx="46" cy="20" rx="4" ry="2.5" fill="#90b878" class="if"/>
+            <path d="M36 36 Q36 26 36 24" stroke="#6a9060" stroke-width="1.2" fill="none" class="il"/>
+          </svg>
+          Coastal wetland
+        </button>
+
+        <!-- Creek or river -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#d8e8d0" class="if"/>
+            <path d="M8 0 Q14 10 10 20 Q6 30 12 38" stroke="#70b0d0" stroke-width="8" fill="none" stroke-linecap="round" class="il"/>
+            <path d="M8 0 Q14 10 10 20 Q6 30 12 38" stroke="#88c8e8" stroke-width="5" fill="none" stroke-linecap="round" class="il"/>
+            <path d="M10 8 Q12 6 14 8" stroke="#50a0c0" stroke-width="0.8" fill="none" class="il"/>
+            <path d="M9 20 Q11 18 13 20" stroke="#50a0c0" stroke-width="0.8" fill="none" class="il"/>
+            <ellipse cx="30" cy="12" rx="8" ry="5" fill="#6a9840" class="if"/>
+            <ellipse cx="26" cy="14" rx="5" ry="4" fill="#5a8830" class="if"/>
+            <line x1="28" y1="18" x2="28" y2="22" stroke="#7a6030" stroke-width="1.2" class="il"/>
+            <ellipse cx="42" cy="22" rx="7" ry="4.5" fill="#78a848" class="if"/>
+            <ellipse cx="46" cy="24" rx="4" ry="3" fill="#90c060" class="if"/>
+            <line x1="42" y1="27" x2="42" y2="32" stroke="#7a6030" stroke-width="1.2" class="il"/>
+            <path d="M20 34 Q26 30 32 34" fill="#8cb860" stroke="none" class="if"/>
+          </svg>
+          Creek or river
+        </button>
+
+        <!-- Freshwater wetland -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#d8ecd8" class="if"/>
+            <ellipse cx="26" cy="30" rx="22" ry="8" fill="#88c0a0" class="if"/>
+            <ellipse cx="26" cy="29" rx="18" ry="5" fill="#70b090" class="if"/>
+            <path d="M10 30 Q14 27 18 30" stroke="#50907a" stroke-width="0.7" fill="none" class="il"/>
+            <path d="M30 29 Q34 26 38 29" stroke="#50907a" stroke-width="0.7" fill="none" class="il"/>
+            <path d="M12 36 Q12 26 12 22" stroke="#4a8050" stroke-width="1.4" fill="none" class="il"/>
+            <path d="M12 24 Q9 20 7 22" stroke="#4a8050" stroke-width="1" fill="none" class="il"/>
+            <path d="M12 27 Q15 23 17 25" stroke="#4a8050" stroke-width="1" fill="none" class="il"/>
+            <path d="M24 36 Q24 22 24 18" stroke="#3a7040" stroke-width="1.5" fill="none" class="il"/>
+            <path d="M24 20 Q21 16 19 18" stroke="#3a7040" stroke-width="1" fill="none" class="il"/>
+            <path d="M24 23 Q27 19 29 21" stroke="#3a7040" stroke-width="1" fill="none" class="il"/>
+            <path d="M24 27 Q22 23 20 25" stroke="#3a7040" stroke-width="0.8" fill="none" class="il"/>
+            <ellipse cx="8" cy="19" rx="3" ry="1.5" fill="#90c878" class="if"/>
+            <ellipse cx="38" cy="17" rx="4" ry="2" fill="#90c878" class="if"/>
+            <ellipse cx="44" cy="20" rx="3" ry="1.5" fill="#78b060" class="if"/>
+            <circle cx="20" cy="32" r="1.5" fill="#60a080" class="if"/>
+            <circle cx="32" cy="31" r="1" fill="#60a080" class="if"/>
+          </svg>
+          Freshwater wetland
+        </button>
+
+        <!-- Natural pool -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#d0e8ec" class="if"/>
+            <ellipse cx="26" cy="28" rx="18" ry="9" fill="#60b0c0" class="if"/>
+            <ellipse cx="26" cy="27" rx="14" ry="6" fill="#80c8d8" class="if"/>
+            <path d="M12 27 Q16 24 20 27" stroke="#50a0b0" stroke-width="0.8" fill="none" class="il"/>
+            <path d="M30 26 Q34 23 38 26" stroke="#50a0b0" stroke-width="0.8" fill="none" class="il"/>
+            <path d="M10 30 Q14 28 18 30 Q22 32 26 30 Q30 28 34 30 Q38 32 42 30" stroke="#40909a" stroke-width="0.6" fill="none" class="il"/>
+            <path d="M8 28 Q4 22 6 16 Q10 22 8 28" fill="#b8d0b0" stroke="none" class="if"/>
+            <path d="M44 28 Q48 22 46 16 Q42 22 44 28" fill="#b8d0b0" stroke="none" class="if"/>
+            <ellipse cx="26" cy="16" rx="8" ry="5" fill="#78c8d8" class="if"/>
+            <path d="M20 18 Q22 14 26 12 Q30 14 32 18" fill="#90d8e8" stroke="none" class="if"/>
+            <path d="M22 14 Q24 10 26 8 Q28 10 30 14" stroke="#60b0c0" stroke-width="1" fill="none" class="il"/>
+            <circle cx="26" cy="7" r="2" fill="#f8e060" class="if"/>
+          </svg>
+          Natural pool
+        </button>
+
+        <!-- Urban / backyard -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#e0ddd8" class="if"/>
+            <rect x="4" y="18" width="14" height="20" fill="#b0b0b0" class="if"/>
+            <rect x="4" y="12" width="14" height="7" fill="#c0c0bc" class="if"/>
+            <polygon points="4,12 11,6 18,12" fill="#a0a0a0" class="if"/>
+            <rect x="7" y="22" width="4" height="5" fill="#d8d0c0" class="if"/>
+            <rect x="13" y="22" width="3" height="4" fill="#c8d8e0" class="if"/>
+            <rect x="22" y="14" width="12" height="24" fill="#c8c4bc" class="if"/>
+            <polygon points="22,14 28,8 34,14" fill="#b0aaa0" class="if"/>
+            <rect x="25" y="20" width="4" height="5" fill="#c8d8e0" class="if"/>
+            <rect x="25" y="28" width="4" height="10" fill="#a09080" class="if"/>
+            <rect x="38" y="20" width="10" height="18" fill="#b8b4ac" class="if"/>
+            <polygon points="38,20 43,15 48,20" fill="#a0a098" class="if"/>
+            <rect x="40" y="24" width="3" height="4" fill="#c8d8e0" class="if"/>
+            <rect x="0" y="34" width="52" height="4" fill="#a8a090" class="if"/>
+            <line x1="0" y1="34" x2="52" y2="34" stroke="#909080" stroke-width="0.5" class="il"/>
+          </svg>
+          Urban / backyard
+        </button>
+
+        <!-- Park / open space -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#d8ecc8" class="if"/>
+            <rect x="0" y="28" width="52" height="10" fill="#a8d078" class="if"/>
+            <path d="M0 28 Q10 24 20 27 Q32 30 52 26 L52 28 L0 28Z" fill="#90c060" class="if"/>
+            <polygon points="10,28 16,14 22,28" fill="#5a8c30" class="if"/>
+            <polygon points="13,22 16,14 19,22" fill="#4a7c20" class="if"/>
+            <rect x="15" y="28" width="2" height="4" fill="#8a6030" class="if"/>
+            <polygon points="32,28 38,12 44,28" fill="#4a8020" class="if"/>
+            <polygon points="35,21 38,12 41,21" fill="#3a7010" class="if"/>
+            <rect x="37" y="28" width="2" height="4" fill="#8a6030" class="if"/>
+            <path d="M2 30 Q8 28 14 30" stroke="#80b050" stroke-width="0.7" fill="none" class="il"/>
+            <path d="M36 31 Q42 29 48 31" stroke="#80b050" stroke-width="0.7" fill="none" class="il"/>
+            <circle cx="42" cy="10" r="3.5" fill="#f8d860" class="if"/>
+          </svg>
+          Park / open space
+        </button>
+
+        <!-- Grassland / meadow -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#dcecd0" class="if"/>
+            <path d="M0 26 Q12 20 26 23 Q40 26 52 21 L52 38 L0 38 Z" fill="#a8d070" class="if"/>
+            <path d="M0 30 Q14 26 28 29 Q40 32 52 28 L52 38 L0 38 Z" fill="#90c058" class="if"/>
+            <line x1="8" y1="30" x2="6" y2="22" stroke="#70a840" stroke-width="1.2" stroke-linecap="round" class="il"/>
+            <line x1="8" y1="30" x2="10" y2="23" stroke="#70a840" stroke-width="1" stroke-linecap="round" class="il"/>
+            <line x1="18" y1="28" x2="16" y2="19" stroke="#60982e" stroke-width="1.2" stroke-linecap="round" class="il"/>
+            <line x1="18" y1="28" x2="20" y2="20" stroke="#60982e" stroke-width="1" stroke-linecap="round" class="il"/>
+            <line x1="30" y1="27" x2="28" y2="18" stroke="#70a840" stroke-width="1.2" stroke-linecap="round" class="il"/>
+            <line x1="30" y1="27" x2="32" y2="19" stroke="#70a840" stroke-width="1" stroke-linecap="round" class="il"/>
+            <line x1="42" y1="28" x2="40" y2="20" stroke="#60982e" stroke-width="1.2" stroke-linecap="round" class="il"/>
+            <line x1="42" y1="28" x2="44" y2="21" stroke="#60982e" stroke-width="1" stroke-linecap="round" class="il"/>
+            <path d="M0 18 Q10 12 22 16 Q34 20 52 14" stroke="#b8d890" stroke-width="0.6" fill="none" class="il"/>
+            <circle cx="38" cy="8" r="4" fill="#f8d860" class="if"/>
+            <path d="M14 10 Q18 7 22 10" stroke="#80a060" stroke-width="0.7" fill="none" class="il"/>
+          </svg>
+          Grassland / meadow
+        </button>
+
+        <!-- Chaparral -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#e8e0d0" class="if"/>
+            <path d="M0 28 Q12 20 26 24 Q38 28 52 22 L52 38 L0 38 Z" fill="#c8b888" class="if"/>
+            <path d="M0 32 Q10 26 22 29 Q34 32 52 28 L52 38 L0 38 Z" fill="#b0a070" class="if"/>
+            <ellipse cx="8" cy="28" rx="6" ry="4" fill="#7a9040" class="if"/>
+            <ellipse cx="5" cy="30" rx="4" ry="3" fill="#6a8030" class="if"/>
+            <line x1="8" y1="32" x2="8" y2="35" stroke="#8a7050" stroke-width="1" class="il"/>
+            <ellipse cx="40" cy="26" rx="7" ry="4.5" fill="#7a9040" class="if"/>
+            <ellipse cx="37" cy="28" rx="4" ry="3" fill="#6a8030" class="if"/>
+            <ellipse cx="43" cy="27" rx="4" ry="3" fill="#8aaa50" class="if"/>
+            <line x1="40" y1="30" x2="40" y2="34" stroke="#8a7050" stroke-width="1" class="il"/>
+            <path d="M24 36 Q26 30 28 36" stroke="#6a8030" stroke-width="1.2" fill="none" class="il"/>
+            <path d="M26 32 Q24 29 22 31" stroke="#6a8030" stroke-width="1" fill="none" class="il"/>
+            <path d="M26 32 Q28 29 30 31" stroke="#6a8030" stroke-width="1" fill="none" class="il"/>
+          </svg>
+          Chaparral
+        </button>
+
+        <!-- Canyon -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#e8e4de" class="if"/>
+            <polygon points="0,38 0,10 8,18 14,12 18,20 18,38" fill="#c9b89a" class="if"/>
+            <polygon points="0,38 0,18 8,24 14,19 18,26 18,38" fill="#b8a285" class="if"/>
+            <polygon points="52,38 52,8 44,16 38,10 34,19 34,38" fill="#c9b89a" class="if"/>
+            <polygon points="52,38 52,16 44,22 38,17 34,24 34,38" fill="#b8a285" class="if"/>
+            <rect x="16" y="32" width="20" height="6" fill="#d6c8b0" class="if"/>
+            <line x1="0" y1="22" x2="18" y2="22" stroke="#a08c72" stroke-width="0.75" class="il"/>
+            <line x1="0" y1="28" x2="18" y2="28" stroke="#a08c72" stroke-width="0.75" class="il"/>
+            <line x1="34" y1="21" x2="52" y2="21" stroke="#a08c72" stroke-width="0.75" class="il"/>
+            <line x1="34" y1="27" x2="52" y2="27" stroke="#a08c72" stroke-width="0.75" class="il"/>
+          </svg>
+          Canyon
+        </button>
+
+        <!-- Mesa / plateau -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#e4ddd0" class="if"/>
+            <rect x="8" y="16" width="36" height="22" fill="#c8b890" class="if"/>
+            <rect x="8" y="14" width="36" height="4" fill="#d8c8a0" class="if"/>
+            <polygon points="8,16 0,24 0,38 8,38" fill="#b0a078" class="if"/>
+            <polygon points="44,16 52,24 52,38 44,38" fill="#b0a078" class="if"/>
+            <line x1="8" y1="22" x2="44" y2="22" stroke="#b0a070" stroke-width="0.6" class="il"/>
+            <line x1="8" y1="28" x2="44" y2="28" stroke="#b0a070" stroke-width="0.5" class="il"/>
+            <rect x="8" y="12" width="36" height="2" fill="#a8c888" class="if"/>
+            <ellipse cx="18" cy="12" rx="4" ry="2.5" fill="#88b060" class="if"/>
+            <ellipse cx="30" cy="11" rx="5" ry="3" fill="#90b868" class="if"/>
+            <ellipse cx="40" cy="12" rx="3" ry="2" fill="#88b060" class="if"/>
+            <circle cx="10" cy="6" r="3" fill="#f8d860" class="if"/>
+            <line x1="10" y1="2" x2="10" y2="1" stroke="#f0c840" stroke-width="1" class="il"/>
+            <line x1="13" y1="3.5" x2="14" y2="2.8" stroke="#f0c840" stroke-width="1" class="il"/>
+            <line x1="14" y1="6" x2="15" y2="6" stroke="#f0c840" stroke-width="1" class="il"/>
+          </svg>
+          Mesa / plateau
+        </button>
+
+        <!-- Oak woodland -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#dce8d0" class="if"/>
+            <path d="M0 30 Q10 26 20 29 Q32 32 52 28 L52 38 L0 38 Z" fill="#a8c880" class="if"/>
+            <rect x="11" y="24" width="3" height="14" fill="#8a6030" class="if"/>
+            <ellipse cx="14" cy="18" rx="9" ry="7" fill="#5a8828" class="if"/>
+            <ellipse cx="10" cy="20" rx="6" ry="5" fill="#4a7820" class="if"/>
+            <ellipse cx="18" cy="21" rx="6" ry="4" fill="#6a9830" class="if"/>
+            <ellipse cx="14" cy="15" rx="5" ry="4" fill="#5a8828" class="if"/>
+            <rect x="35" y="26" width="3" height="12" fill="#7a5020" class="if"/>
+            <ellipse cx="38" cy="18" rx="10" ry="8" fill="#4a7818" class="if"/>
+            <ellipse cx="34" cy="21" rx="7" ry="5" fill="#3a6810" class="if"/>
+            <ellipse cx="42" cy="20" rx="7" ry="5" fill="#5a8820" class="if"/>
+            <ellipse cx="38" cy="14" rx="6" ry="5" fill="#4a7818" class="if"/>
+            <circle cx="6" cy="14" r="1" fill="#c8a060" class="if"/>
+            <circle cx="24" cy="10" r="1" fill="#c8a060" class="if"/>
+            <path d="M0 35 Q8 33 16 35" stroke="#88a860" stroke-width="0.6" fill="none" class="il"/>
+          </svg>
+          Oak woodland
+        </button>
+
+        <!-- Mountain -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#d8e4ee" class="if"/>
+            <polygon points="14,4 36,38 -4,38" fill="#b8c8d8" class="if"/>
+            <polygon points="14,4 36,38 14,38" fill="#9ab0c4" class="if"/>
+            <polygon points="4,16 22,38 -8,38" fill="#8090a0" class="if"/>
+            <polygon points="40,12 60,38 20,38" fill="#708090" class="if"/>
+            <polygon points="40,12 60,38 40,38" fill="#607080" class="if"/>
+            <polygon points="14,4 20,14 8,14" fill="#f0f0f0" class="if"/>
+            <polygon points="40,12 45,20 35,20" fill="#f0f0f0" class="if"/>
+            <path d="M0 32 Q6 30 10 32 Q14 30 18 32" stroke="#506060" stroke-width="0.8" fill="none" class="il"/>
+          </svg>
+          Mountain
+        </button>
+
+        <!-- Desert -->
+        <button class="s-chip chip" onclick="togChip(this)">
+          <svg width="52" height="38" viewBox="0 0 52 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="52" height="38" rx="4" fill="#f0dfc0" class="if"/>
+            <path d="M0 28 Q10 24 20 27 Q32 30 52 26 L52 38 L0 38 Z" fill="#e0c898" class="if"/>
+            <path d="M0 32 Q15 28 30 31 Q40 33 52 30 L52 38 L0 38 Z" fill="#d0b880" class="if"/>
+            <line x1="14" y1="38" x2="14" y2="22" stroke="#609848" stroke-width="2.5" stroke-linecap="round" class="il"/>
+            <line x1="14" y1="27" x2="9" y2="23" stroke="#609848" stroke-width="2" stroke-linecap="round" class="il"/>
+            <line x1="14" y1="30" x2="19" y2="26" stroke="#609848" stroke-width="2" stroke-linecap="round" class="il"/>
+            <line x1="36" y1="38" x2="36" y2="20" stroke="#508838" stroke-width="2.5" stroke-linecap="round" class="il"/>
+            <line x1="36" y1="25" x2="30" y2="21" stroke="#508838" stroke-width="2" stroke-linecap="round" class="il"/>
+            <line x1="36" y1="28" x2="42" y2="24" stroke="#508838" stroke-width="2" stroke-linecap="round" class="il"/>
+            <circle cx="40" cy="8" r="5" fill="#f8c840" class="if"/>
+            <line x1="40" y1="1" x2="40" y2="0" stroke="#f0b820" stroke-width="1.2" class="il"/>
+            <line x1="45" y1="3" x2="46" y2="2" stroke="#f0b820" stroke-width="1.2" class="il"/>
+            <line x1="47" y1="8" x2="48" y2="8" stroke="#f0b820" stroke-width="1.2" class="il"/>
+            <line x1="35" y1="3" x2="34" y2="2" stroke="#f0b820" stroke-width="1.2" class="il"/>
+            <path d="M4 20 Q8 17 12 19" stroke="#c8a060" stroke-width="0.7" fill="none" class="il"/>
+            <path d="M22 22 Q26 19 30 21" stroke="#c8a060" stroke-width="0.7" fill="none" class="il"/>
+          </svg>
+          Desert
+        </button>
+
+      
       </div>
     </div>
 
@@ -267,10 +955,11 @@
   <!-- ── STEP 3: Details ── -->
   <div id="step-3" style="display:none">
     <div class="field">
-      <label id="tag-label">What was it doing? <span style="font-weight:400;color:#aaa">(optional)</span></label>
+      <label id="tag-label">What was it doing?</label>
       <div class="chip-grid" id="behavior-chips"></div>
       <div class="new-tag-row" id="new-tag-wrap">
-        <input type="text" id="new-tag-text" placeholder="Suggest a tag…" style="flex:1">
+        <input type="text" id="new-tag-text" placeholder="In a few words…" style="flex:1"
+          onkeydown="if(event.key==='Enter'){addCustomTag();event.preventDefault();}">
         <button onclick="addCustomTag()">Add</button>
       </div>
     </div>
@@ -337,71 +1026,101 @@ const SUPABASE_ANON_KEY = 'sb_publishable_w5_98N2Xc4QewD13RjOIGw_LHYGTyXc';
 // ═══════════════════════════════════════════════
 
 // ── Build time dropdown (30-min slots) ──
-function buildTimeOptions(){
-  const sel = document.getElementById('obs-time');
-  sel.innerHTML = '<option value="">I don\'t remember</option>';
+function buildTimeOptions(selEl){
+  selEl.innerHTML = '<option value="">Select a time</option>';
   for(let h = 0; h < 24; h++){
     [0, 30].forEach(m => {
       const display12 = ((h % 12) || 12);
       const period    = h < 12 ? 'am' : 'pm';
-      const label     = `${display12}:${m === 0 ? '00' : '30'} ${period}`;
-      const value     = `${String(h).padStart(2,'0')}:${m === 0 ? '00' : '30'}`;
+      const mm        = m === 0 ? '00' : '30';
+      const label     = `${display12}:${mm} ${period}`;
+      const value     = `${String(h).padStart(2,'0')}:${mm}`;
       const opt       = document.createElement('option');
       opt.value = value; opt.textContent = label;
-      sel.appendChild(opt);
+      selEl.appendChild(opt);
     });
   }
 }
 
 function nearestTimeSlot(){
-  const h = new Date().getHours();
-  const m = new Date().getMinutes() < 30 ? '00' : '30';
-  return `${String(h).padStart(2,'0')}:${m}`;
+  const now2 = new Date();
+  const mm   = now2.getMinutes() < 30 ? '00' : '30';
+  return `${String(now2.getHours()).padStart(2,'0')}:${mm}`;
+}
+
+function exactTimeLabel(){
+  const now2 = new Date();
+  const h  = now2.getHours();
+  const mm = String(now2.getMinutes()).padStart(2,'0');
+  const display12 = ((h % 12) || 12);
+  const period = h < 12 ? 'am' : 'pm';
+  return `${display12}:${mm} ${period}`;
 }
 
 // ── Tag sets ──
 const TAGS = {
-  plant:      ['Flowering','Fruiting','Budding','Going to seed','Leafing out','Dying back','First of season','Last of season','Peak bloom','Unusually early','Unusually late'],
-  animal:     ['Calling / singing','Nesting','Courting','Feeding','Migrating through','Roosting','First of season','Last of season','Unusual numbers','Unusually early','Unusually late'],
-  bug:        ['Emerging','Swarming','Mating','Feeding','First of season','Last of season','Large numbers','Unusually early','Unusually late'],
-  fungi:      ['Fruiting body visible','Large flush','Single specimen','Cluster','On wood','On ground','After rain','First of season','Last of season','Unusually early','Unusually late'],
-  water:      ['Running water','Standing water','Drying up','Flooding','Low water level','High water level','Full pools','Dry pools','Clear water','Murky water','First flow of season','Last flow of season'],
-  atmosphere: ['Marine layer / fog','Santa Ana winds','First rain','Unusual heat','Unusual cold','Very humid','Very dry','Smell of sage','Smell of rain (petrichor)','Smell of the ocean','Smoke / fire smell','Clear and still','Gusty','Overcast all day','Unusually clear skies','Vivid sunrise / sunset','First of season'],
-  other:      ['First of season','Last of season','Unusual','Notable abundance','Unusually early','Unusually late'],
+  plant:        ['Flowering','Fruiting','Budding','Going to seed','Leafing out','Dying back','First of season','Last of season','Peak bloom','Unusually early','Unusually late'],
+  animal:       ['Calling / singing','Nesting','Courting','Feeding','Migrating through','Roosting','First of season','Last of season','Unusual numbers','Unusually early','Unusually late'],
+  bug:          ['Emerging','Swarming','Mating','Feeding','First of season','Last of season','Large numbers','Unusually early','Unusually late'],
+  fungi:        ['Fruiting body visible','Large flush','Single specimen','Cluster','On wood','On ground','After rain','First of season','Last of season','Unusually early','Unusually late'],
+  water:        ['Running water','Standing water','Drying up','Flooding','Low water level','High water level','Full pools','Dry pools','Clear water','Murky water','First flow of season','Last flow of season'],
+  land:         ['Bare soil','Post-fire regrowth','Fire-cleared','Erosion visible','Crusted soil','First green after burn','Ash layer present','First of season','Unusually early','Unusually late'],
+  atmosphere:   ['Marine layer / fog','Santa Ana winds','First rain','Unusual heat','Unusual cold','Very humid','Very dry','Smell of sage','Smell of rain (petrichor)','Smell of the ocean','Smoke / fire smell','Clear and still','Gusty','Overcast all day','Unusually clear skies','Vivid sunrise / sunset','First of season'],
+  other:        ['First of season','Last of season','Unusual','Notable abundance','Unusually early','Unusually late'],
 };
 const PLACEHOLDERS = {
-  plant:      'e.g. California poppy, Lupinus nanus, wild mustard…',
-  animal:     'e.g. Allen\'s hummingbird, gray whale, Pacific chorus frog…',
-  bug:        'e.g. monarch butterfly, painted lady, native bee…',
-  fungi:      'e.g. chanterelle, Amanita, turkey tail — or just describe it…',
-  water:      'e.g. Tecolote Creek, a seasonal pool, the San Diego River…',
-  atmosphere: 'e.g. Santa Ana winds, marine layer, first rain…',
-  other:      'Describe what you observed…',
+  plant:        'e.g. California poppy, Lupinus nanus, wild mustard…',
+  animal:       'e.g. Allen\'s hummingbird, gray whale, Pacific chorus frog…',
+  bug:          'e.g. monarch butterfly, painted lady, native bee…',
+  fungi:        'e.g. chanterelle, Amanita, turkey tail — or just describe it…',
+  water:        'e.g. Tecolote Creek, a seasonal pool, the San Diego River…',
+  land:         'e.g. chaparral hillside, coastal scrub, post-fire slope…',
+  atmosphere:   'e.g. Santa Ana winds, marine layer, first rain…',
+  other:        'Describe what you observed…',
 };
+
+// Deduplicated common label
+const COMMON_NAME_LABEL = 'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>';
 const SPECIES_LABELS = {
-  plant:      'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
-  animal:     'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
-  bug:        'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
-  fungi:      'Name <span style="font-weight:400;color:#aaa">(common or scientific — or just describe it)</span>',
-  water:      'Which body of water? <span style="font-weight:400;color:#aaa">(name or describe it)</span>',
-  atmosphere: 'What was it? <span style="font-weight:400;color:#aaa">(describe it)</span>',
-  other:      'What did you observe?',
+  plant:        COMMON_NAME_LABEL,
+  animal:       COMMON_NAME_LABEL,
+  bug:          COMMON_NAME_LABEL,
+  fungi:        COMMON_NAME_LABEL,
+  water:        'Which body of water? <span style="font-weight:400;color:#aaa">(name or describe it)</span>',
+  land:         'Where? <span style="font-weight:400;color:#aaa">(name or describe the spot)</span>',
+  atmosphere:   'What was it? <span style="font-weight:400;color:#aaa">(describe it)</span>',
+  other:        'What did you observe?',
 };
 const TAG_QUESTIONS = {
   plant:'What was it doing?', animal:'What was it doing?', bug:'What was it doing?',
   fungi:'What did you notice?', water:'How would you describe the water?',
-  atmosphere:'How would you describe it?', other:'Anything notable?',
+  land:'What did you notice about the land?', atmosphere:'How would you describe it?',
+other:'Anything notable?',
 };
-const SHOW_ABUND = { plant:true, animal:true, bug:true, fungi:true, water:false, atmosphere:false, other:false };
-const CAT_LABELS = { plant:'Plant', animal:'Animal', bug:'Bug / insect', fungi:'Fungi', water:'Water', atmosphere:'Atmosphere', other:'Other' };
+const SHOW_ABUND = { plant:true, animal:true, bug:true, fungi:true, water:false, land:false, atmosphere:false, other:false };
+const CAT_LABELS = { plant:'Plant', animal:'Animal', bug:'Bug', fungi:'Fungi', water:'Water', land:'Land', atmosphere:'Atmosphere', other:'Other' };
 
 // ── State ──
 let customTags = [], locMode = 'here', pinLat = '', pinLng = '';
 let leafletMap = null, leafletMarker = null, mapInitialized = false;
+// Track current timestamp mode
+let tsMode = 'now';
+// Track whether exact-time override is open (for "now" mode)
+let exactTimeOpen = false;
 
-const now = new Date();
 function pad(n){ return String(n).padStart(2,'0'); }
-const todayStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+
+function getTodayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function formatDateDisplay(str){
+  if(!str) return '—';
+  const [y,m,d] = str.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
+}
 
 // ── Dots ──
 function updateDots(n){
@@ -414,7 +1133,47 @@ function updateDots(n){
 }
 
 // ── Step navigation ──
+function shake(el){
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 400);
+}
+
 function goStep(n){
+  // ── Step 1 validation ──
+  if(n === 2){
+    if(!getCat()){
+      shake(document.getElementById('cat-chips')); return;
+    }
+    const speciesField = document.getElementById('species-field');
+    if(speciesField.style.display !== 'none' && !document.getElementById('species').value.trim()){
+      shake(speciesField); document.getElementById('species').focus(); return;
+    }
+    const abundField = document.getElementById('abund-field');
+    if(abundField.style.display !== 'none' && !document.querySelector('.abund-chip.sel')){
+      shake(abundField); return;
+    }
+  }
+
+  // ── Step 2 validation ──
+  if(n === 3){
+    syncHiddenTimeFields();
+    if(tsMode === 'retro' && !document.getElementById('obs-date').value){
+      shake(document.getElementById('obs-date-retro'));
+      document.getElementById('obs-date-retro').focus(); return;
+    }
+    if(!document.querySelector('#setting-chips .chip.sel')){
+      shake(document.getElementById('setting-chips')); return;
+    }
+  }
+
+  // ── Step 3 validation ──
+  if(n === 4){
+    if(!document.querySelector('#behavior-chips .chip.sel')){
+      shake(document.getElementById('behavior-chips')); return;
+    }
+    syncHiddenTimeFields();
+  }
+
   [1,2,3,4].forEach(i => document.getElementById('step-'+i).style.display = 'none');
   document.getElementById('step-success').style.display = 'none';
   document.getElementById('error-banner').style.display = 'none';
@@ -423,6 +1182,24 @@ function goStep(n){
   if(n === 3) buildBehaviorChips();
   if(n === 4) buildReview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Sync hidden time fields from visible UI ──
+function syncHiddenTimeFields(){
+  if(tsMode === 'now'){
+    document.getElementById('obs-date').value = getTodayStr();
+    // Always store the exact current time for "right now" submissions
+    const now2 = new Date();
+    const hh = String(now2.getHours()).padStart(2,'0');
+    const mm = String(now2.getMinutes()).padStart(2,'0');
+    document.getElementById('obs-time').value = `${hh}:${mm}`;
+  } else {
+    document.getElementById('obs-date').value = document.getElementById('obs-date-retro').value;
+    // If exact-time override is open and has a value, use that; otherwise use the slot dropdown
+    const exactSel = document.getElementById('obs-time-now');
+    const slotSel  = document.getElementById('obs-time-retro');
+    document.getElementById('obs-time').value = (exactTimeOpen && exactSel.value) ? exactSel.value : slotSel.value;
+  }
 }
 
 // ── Category ──
@@ -447,23 +1224,46 @@ function selAbund(btn){
 
 // ── Timestamp ──
 function setTs(mode){
+  tsMode = mode;
   document.getElementById('ts-now').classList.toggle('active', mode === 'now');
   document.getElementById('ts-retro').classList.toggle('active', mode === 'retro');
-  const dateEl = document.getElementById('obs-date');
-  const timeEl = document.getElementById('obs-time');
+
   if(mode === 'now'){
-    dateEl.value    = todayStr;
-    timeEl.value    = nearestTimeSlot();
-    dateEl.readOnly = true;
-    timeEl.disabled = true;
-    document.getElementById('ts-hint').textContent = 'Timestamp locked to right now.';
+    document.getElementById('ts-now-display').style.display = 'block';
+    document.getElementById('ts-retro-display').style.display = 'none';
+    // Show exact current time (not rounded)
+    document.getElementById('locked-date-display').textContent = formatDateDisplay(getTodayStr());
+    document.getElementById('locked-time-text').textContent = exactTimeLabel();
   } else {
-    dateEl.value    = '';
-    timeEl.value    = '';
-    dateEl.readOnly = false;
-    timeEl.disabled = false;
-    document.getElementById('ts-hint').textContent = 'Enter the date — time is optional.';
+    document.getElementById('ts-now-display').style.display = 'none';
+    document.getElementById('ts-retro-display').style.display = 'block';
+    document.getElementById('obs-date-retro').value = '';
+  document.getElementById('date-placeholder').style.display = 'flex';
+    document.getElementById('obs-time-retro').value = '';
+    // Reset exact-time override state
+    exactTimeOpen = false;
+    document.getElementById('exact-time-row').style.display = 'none';
+    document.getElementById('time-slot-wrap').style.display = 'block';
   }
+}
+
+// ── Exact time toggle (for "Another time" mode) ──
+function toggleExactTime(){
+  exactTimeOpen = true;
+  document.getElementById('time-slot-wrap').style.display = 'none';
+  document.getElementById('exact-time-row').style.display = 'block';
+  document.getElementById('obs-time-now').value = nearestTimeSlot();
+}
+
+function updateDatePlaceholder(input){
+  document.getElementById('date-placeholder').style.display = input.value ? 'none' : 'flex';
+}
+
+function revertToSlot(){
+  exactTimeOpen = false;
+  document.getElementById('exact-time-row').style.display = 'none';
+  document.getElementById('time-slot-wrap').style.display = 'block';
+  document.getElementById('obs-time-now').value = '';
 }
 
 // ── Location ──
@@ -485,7 +1285,16 @@ function setLoc(mode){
           pinLng = p.coords.longitude.toFixed(5);
           hereStatus.textContent = `Location captured (±${Math.round(p.coords.accuracy)}m). Stored privately.`;
         },
-        () => { hereStatus.textContent = 'Could not get location. Try "Mark on map".'; }
+        err => {
+          if(err.code === 1){
+            hereStatus.textContent = 'Location access was denied. To enable it, go to your browser or device Settings → Privacy → Location and allow access for this site, or use Mark on map instead.';
+          } else if(err.code === 2){
+            hereStatus.textContent = 'Your location couldn\'t be determined right now — you may be indoors or offline. Try Mark on map instead.';
+          } else {
+            hereStatus.textContent = 'Location request timed out. Try again or use Mark on map.';
+          }
+        },
+        { timeout: 10000 }
       );
     } else {
       hereStatus.textContent = 'Geolocation unavailable. Try "Mark on map".';
@@ -493,7 +1302,6 @@ function setLoc(mode){
   } else {
     hereStatus.style.display = 'none';
     mapArea.style.display    = 'block';
-    // Show container first, then init map, then force size recalculation
     setTimeout(() => {
       document.getElementById('map-container').style.display = 'block';
       initMap();
@@ -566,29 +1374,45 @@ async function searchAddress(){
 // ── Chips ──
 function togChip(btn){ btn.classList.toggle('sel'); }
 
-// ── Behavior tags ──
+// ── Behavior tags — preserves selections across rebuilds ──
 function buildBehaviorChips(){
   const cat  = getCat();
   const tags = TAGS[cat] || TAGS.other;
+
   document.getElementById('tag-label').innerHTML =
-    `${TAG_QUESTIONS[cat] || 'What was it doing?'} <span style="font-weight:400;color:#aaa">(optional)</span>`;
+    `${TAG_QUESTIONS[cat] || 'What was it doing?'}`;
+
+  // Capture currently selected tags before clearing
+  const selected = new Set(
+    [...document.querySelectorAll('#behavior-chips .chip.sel')].map(b => b.textContent.trim())
+  );
+
   const wrap = document.getElementById('behavior-chips');
   wrap.innerHTML = '';
+
   tags.forEach(t => {
     const b = document.createElement('button');
-    b.className = 'chip'; b.textContent = t;
+    b.className = 'chip' + (selected.has(t) ? ' sel' : '');
+    b.textContent = t;
     b.onclick = () => togChip(b);
     wrap.appendChild(b);
   });
+
+  // Re-add custom tags (always selected)
   customTags.forEach(t => {
     const b = document.createElement('button');
     b.className = 'chip sel'; b.textContent = t;
     b.onclick = () => togChip(b);
     wrap.appendChild(b);
   });
+
+  // Always show suggest button; re-show if hidden from a previous session
+  const existingSuggest = document.getElementById('suggest-btn-el');
+  if(existingSuggest) existingSuggest.remove();
   const suggest = document.createElement('button');
   suggest.className = 'suggest-btn';
-  suggest.textContent = '+ Suggest a tag';
+  suggest.id = 'suggest-btn-el';
+  suggest.textContent = '+ Add a tag';
   suggest.onclick = () => {
     document.getElementById('new-tag-wrap').style.display = 'flex';
     suggest.style.display = 'none';
@@ -597,10 +1421,12 @@ function buildBehaviorChips(){
 }
 
 function addCustomTag(){
-  const val = document.getElementById('new-tag-text').value.trim();
+  const input = document.getElementById('new-tag-text');
+  const val = input.value.trim();
   if(!val) return;
   customTags.push(val);
-  document.getElementById('new-tag-text').value = '';
+  input.value = '';
+  // Re-show the suggest button after adding, hide the input row
   document.getElementById('new-tag-wrap').style.display = 'none';
   buildBehaviorChips();
 }
@@ -652,16 +1478,19 @@ function buildReview(){
   const cat      = getCat();
   const species  = document.getElementById('species').value;
   const abund    = document.querySelector('.abund-chip.sel')?.textContent || '';
-  const date     = document.getElementById('obs-date').value;
-  const timeSel  = document.getElementById('obs-time');
-  const timeLabel= timeSel.options[timeSel.selectedIndex]?.text || '';
-  const timeVal  = timeSel.value;
+  const obsDate  = document.getElementById('obs-date').value;
+  const obsTime  = document.getElementById('obs-time').value;
+  const timeLabel = obsTime ? (() => {
+    const [hStr, mStr] = obsTime.split(':');
+    const h = parseInt(hStr);
+    return `${((h%12)||12)}:${mStr} ${h<12?'am':'pm'}`;
+  })() : '';
   const settings = [...document.querySelectorAll('#setting-chips .chip.sel')].map(b => b.textContent.trim()).join(', ') || '—';
   const behaviors= [...document.querySelectorAll('#behavior-chips .chip.sel')].map(b => b.textContent.trim()).join(', ') || '—';
   const desc     = document.getElementById('desc').value;
   const contrib  = document.getElementById('contributor').value;
   const loc      = pinLat && pinLng ? `${pinLat}°N, ${Math.abs(pinLng)}°W` : 'Not recorded';
-  const whenStr  = timeVal ? `${date} at ${timeLabel}` : date;
+  const whenStr  = obsTime ? `${formatDateDisplay(obsDate)} at ${timeLabel}` : formatDateDisplay(obsDate);
   const rows = [
     ['What',        [CAT_LABELS[cat], species].filter(Boolean).join(' — ') || '—'],
     abund ? ['How many', abund] : null,
@@ -683,6 +1512,7 @@ async function submitForm(){
   btn.textContent = 'Submitting…'; btn.disabled = true;
   document.getElementById('error-banner').style.display = 'none';
   try {
+    syncHiddenTimeFields();
     const obsDate = document.getElementById('obs-date').value;
     const obsTime = document.getElementById('obs-time').value;
     if(!obsDate) throw new Error('Please go back and enter a date.');
@@ -733,25 +1563,30 @@ async function submitForm(){
 // ── Reset ──
 function resetForm(){
   customTags = []; pinLat = ''; pinLng = '';
+  tsMode = 'now'; exactTimeOpen = false;
   if(leafletMarker && leafletMap){ leafletMap.removeLayer(leafletMarker); leafletMarker = null; }
   ['species','desc','contributor','address-input'].forEach(id => document.getElementById(id).value = '');
+  ['obs-date','obs-time'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('photo-input').value = '';
   document.getElementById('photo-name').textContent = '';
   document.querySelectorAll('.chip.sel').forEach(c => c.classList.remove('sel'));
   document.querySelectorAll('.abund-chip.sel').forEach(c => c.classList.remove('sel'));
   document.getElementById('species-field').style.display = 'none';
   document.getElementById('abund-field').style.display   = 'none';
-  document.getElementById('map-hint').textContent     = 'Tap to place a pin. Drag it to adjust.';
-  document.getElementById('address-hint').textContent  = 'Or tap the map directly to drop a pin.';
+  document.getElementById('map-hint').textContent        = 'Tap to place a pin. Drag it to adjust.';
+  document.getElementById('address-hint').textContent    = 'Or tap the map directly to drop a pin.';
   document.getElementById('map-container').style.display = 'none';
   document.getElementById('map-area').style.display      = 'none';
+  document.getElementById('new-tag-wrap').style.display  = 'none';
+  document.getElementById('exact-time-row').style.display = 'none';
+  document.getElementById('time-slot-wrap').style.display = 'block';
   setTs('now');
   setLoc('here');
   goStep(1);
 }
 
 // ── Init ──
-buildTimeOptions();
+buildTimeOptions(document.getElementById('obs-time-retro'));
 setTs('now');
 setLoc('here');
 updateDots(1);

@@ -560,12 +560,14 @@
       </div>
       <div id="here-status" class="hint"></div>
       <div id="map-area" style="display:none">
-        <div class="address-row">
-          <input type="text" id="address-input" placeholder="Search an address or place name…"
-            onkeydown="if(event.key==='Enter'){searchAddress();event.preventDefault();}">
-          <button onclick="searchAddress()">Search</button>
+        <div id="address-row-wrap">
+          <div class="address-row">
+            <input type="text" id="address-input" placeholder="Search an address or place name…"
+              onkeydown="if(event.key==='Enter'){searchAddress();event.preventDefault();}">
+            <button onclick="searchAddress()">Search</button>
+          </div>
+          <div class="hint" id="address-hint" style="margin-bottom:6px">Or tap the map directly to drop a pin.</div>
         </div>
-        <div class="hint" id="address-hint" style="margin-bottom:6px">Or tap the map directly to drop a pin.</div>
         <div id="map-container">
           <div class="map-loading" id="map-loading">Loading map…</div>
           <div id="leaflet-map"></div>
@@ -1276,14 +1278,25 @@ function setLoc(mode){
 
   if(mode === 'here'){
     hereStatus.style.display = 'block';
-    mapArea.style.display    = 'none';
     hereStatus.textContent   = 'Getting your location…';
+    document.getElementById('address-row-wrap').style.display = 'none';
+    mapArea.style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('map-container').style.display = 'block';
+      initMap();
+      setTimeout(() => { if(leafletMap) leafletMap.invalidateSize(); }, 200);
+    }, 50);
     if(navigator.geolocation){
       navigator.geolocation.getCurrentPosition(
         p => {
           pinLat = p.coords.latitude.toFixed(5);
           pinLng = p.coords.longitude.toFixed(5);
           hereStatus.textContent = `Location captured (±${Math.round(p.coords.accuracy)}m). Stored privately.`;
+          if(leafletMap){
+            leafletMap.setView([parseFloat(pinLat), parseFloat(pinLng)], 15);
+            placePin(parseFloat(pinLat), parseFloat(pinLng));
+            document.getElementById('map-hint').textContent = 'Your location. Drag the pin to adjust if needed.';
+          }
         },
         err => {
           if(err.code === 1){
@@ -1301,7 +1314,9 @@ function setLoc(mode){
     }
   } else {
     hereStatus.style.display = 'none';
+    document.getElementById('address-row-wrap').style.display = 'block';
     mapArea.style.display    = 'block';
+    document.getElementById('map-hint').textContent = 'Tap to place a pin. Drag it to adjust.';
     setTimeout(() => {
       document.getElementById('map-container').style.display = 'block';
       initMap();
@@ -1588,7 +1603,8 @@ function resetForm(){
 // ── Init ──
 buildTimeOptions(document.getElementById('obs-time-retro'));
 setTs('now');
-setLoc('here');
+// Don't call setLoc on init — geolocation should only be requested
+// when the user reaches Step 2, not silently at page load.
 updateDots(1);
 
 </script>

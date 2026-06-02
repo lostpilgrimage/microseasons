@@ -553,27 +553,18 @@
     <hr class="divider" style="margin: 0.5rem 0">
 
     <div class="field">
-      <label>Where?</label>
-      <div class="loc-toggle">
-        <button class="loc-btn sel" id="loc-here" onclick="setLoc('here')">📍 Here</button>
-        <button class="loc-btn"     id="loc-map"  onclick="setLoc('map')">🗺 Mark on map</button>
+      <label>Where? <span style="font-weight:400;color:#aaa">(optional)</span></label>
+      <div class="address-row">
+        <input type="text" id="address-input" placeholder="Search an address or place name…"
+          onkeydown="if(event.key==='Enter'){searchAddress();event.preventDefault();}">
+        <button onclick="searchAddress()">Search</button>
       </div>
-      <div id="here-status" class="hint"></div>
-      <div id="map-area" style="display:none">
-        <div id="address-row-wrap">
-          <div class="address-row">
-            <input type="text" id="address-input" placeholder="Search an address or place name…"
-              onkeydown="if(event.key==='Enter'){searchAddress();event.preventDefault();}">
-            <button onclick="searchAddress()">Search</button>
-          </div>
-          <div class="hint" id="address-hint" style="margin-bottom:6px">Or tap the map directly to drop a pin.</div>
-        </div>
-        <div id="map-container">
-          <div class="map-loading" id="map-loading">Loading map…</div>
-          <div id="leaflet-map"></div>
-        </div>
-        <div class="hint" id="map-hint" style="margin-top:5px">Tap to place a pin. Drag it to adjust.</div>
+      <div class="hint" id="address-hint" style="margin-bottom:6px">Or tap the map directly to drop a pin.</div>
+      <div id="map-container">
+        <div class="map-loading" id="map-loading">Loading map…</div>
+        <div id="leaflet-map"></div>
       </div>
+      <div class="hint" id="map-hint" style="margin-top:5px">Tap to place a pin. Drag it to adjust.</div>
     </div>
 
     <div class="field">
@@ -1103,7 +1094,7 @@ const SHOW_ABUND = { plant:true, animal:true, bug:true, fungi:true, water:false,
 const CAT_LABELS = { plant:'Plant', animal:'Animal', bug:'Bug', fungi:'Fungi', water:'Water', land:'Land', atmosphere:'Atmosphere', other:'Other' };
 
 // ── State ──
-let customTags = [], locMode = 'here', pinLat = '', pinLng = '';
+let customTags = [], pinLat = '', pinLng = '';
 let leafletMap = null, leafletMarker = null, mapInitialized = false;
 // Track current timestamp mode
 let tsMode = 'now';
@@ -1181,6 +1172,7 @@ function goStep(n){
   document.getElementById('error-banner').style.display = 'none';
   document.getElementById('step-'+n).style.display = 'block';
   updateDots(n);
+  if(n === 2){ setTimeout(() => { document.getElementById('map-container').style.display = 'block'; initMap(); setTimeout(() => { if(leafletMap) leafletMap.invalidateSize(); }, 200); }, 50); }
   if(n === 3) buildBehaviorChips();
   if(n === 4) buildReview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1268,62 +1260,6 @@ function revertToSlot(){
   document.getElementById('obs-time-now').value = '';
 }
 
-// ── Location ──
-function setLoc(mode){
-  locMode = mode;
-  document.getElementById('loc-here').classList.toggle('sel', mode === 'here');
-  document.getElementById('loc-map').classList.toggle('sel', mode === 'map');
-  const hereStatus = document.getElementById('here-status');
-  const mapArea    = document.getElementById('map-area');
-
-  if(mode === 'here'){
-    hereStatus.style.display = 'block';
-    hereStatus.textContent   = 'Getting your location…';
-    document.getElementById('address-row-wrap').style.display = 'none';
-    mapArea.style.display = 'block';
-    setTimeout(() => {
-      document.getElementById('map-container').style.display = 'block';
-      initMap();
-      setTimeout(() => { if(leafletMap) leafletMap.invalidateSize(); }, 200);
-    }, 50);
-    if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition(
-        p => {
-          pinLat = p.coords.latitude.toFixed(5);
-          pinLng = p.coords.longitude.toFixed(5);
-          hereStatus.textContent = `Location captured (±${Math.round(p.coords.accuracy)}m). Stored privately.`;
-          if(leafletMap){
-            leafletMap.setView([parseFloat(pinLat), parseFloat(pinLng)], 15);
-            placePin(parseFloat(pinLat), parseFloat(pinLng));
-            document.getElementById('map-hint').textContent = 'Your location. Drag the pin to adjust if needed.';
-          }
-        },
-        err => {
-          if(err.code === 1){
-            hereStatus.textContent = 'Location access was denied. To enable it, go to your browser or device Settings → Privacy → Location and allow access for this site, or use Mark on map instead.';
-          } else if(err.code === 2){
-            hereStatus.textContent = 'Your location couldn\'t be determined right now — you may be indoors or offline. Try Mark on map instead.';
-          } else {
-            hereStatus.textContent = 'Location request timed out. Try again or use Mark on map.';
-          }
-        },
-        { timeout: 10000 }
-      );
-    } else {
-      hereStatus.textContent = 'Geolocation unavailable. Try "Mark on map".';
-    }
-  } else {
-    hereStatus.style.display = 'none';
-    document.getElementById('address-row-wrap').style.display = 'block';
-    mapArea.style.display    = 'block';
-    document.getElementById('map-hint').textContent = 'Tap to place a pin. Drag it to adjust.';
-    setTimeout(() => {
-      document.getElementById('map-container').style.display = 'block';
-      initMap();
-      setTimeout(() => { if(leafletMap) leafletMap.invalidateSize(); }, 200);
-    }, 50);
-  }
-}
 
 // ── Leaflet map ──
 function initMap(){
@@ -1591,20 +1527,16 @@ function resetForm(){
   document.getElementById('map-hint').textContent        = 'Tap to place a pin. Drag it to adjust.';
   document.getElementById('address-hint').textContent    = 'Or tap the map directly to drop a pin.';
   document.getElementById('map-container').style.display = 'none';
-  document.getElementById('map-area').style.display      = 'none';
   document.getElementById('new-tag-wrap').style.display  = 'none';
   document.getElementById('exact-time-row').style.display = 'none';
   document.getElementById('time-slot-wrap').style.display = 'block';
   setTs('now');
-  setLoc('here');
   goStep(1);
 }
 
 // ── Init ──
 buildTimeOptions(document.getElementById('obs-time-retro'));
 setTs('now');
-// Don't call setLoc on init — geolocation should only be requested
-// when the user reaches Step 2, not silently at page load.
 updateDots(1);
 
 </script>

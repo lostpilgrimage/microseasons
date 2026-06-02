@@ -553,7 +553,7 @@
     <hr class="divider" style="margin: 0.5rem 0">
 
     <div class="field">
-      <label>Where? <span style="font-weight:400;color:#aaa">(optional)</span></label>
+      <label>Where?</label>
       <div class="address-row">
         <input type="text" id="address-input" placeholder="Search an address or place name…"
           onkeydown="if(event.key==='Enter'){searchAddress();event.preventDefault();}">
@@ -1156,6 +1156,9 @@ function goStep(n){
     }
     if(!document.querySelector('#setting-chips .chip.sel')){
       shake(document.getElementById('setting-chips')); return;
+    }
+    if(!pinLat || !pinLng){
+      shake(document.getElementById('map-container')); return;
     }
   }
 

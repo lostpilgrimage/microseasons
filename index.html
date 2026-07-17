@@ -59,12 +59,12 @@
   .chip-grid { display: flex; flex-wrap: wrap; gap: 7px; }
   #cat-chips {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
   }
   #abund-field .abund-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
   }
   .a-chip {
@@ -74,14 +74,14 @@
     border-radius: 4px; cursor: pointer; background: #fff;
     font-size: 12px; color: #666; font-family: inherit;
     transition: background .1s, color .1s, border-color .1s;
-    min-height: 80px; user-select: none;
+    min-height: 80px; min-width: 0; user-select: none;
   }
   .a-chip:hover { border-color: #888; background: #f9f9f7; }
   .a-chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
-  .a-chip svg { display: block; flex-shrink: 0; }
+  .a-chip svg { display: block; flex-shrink: 1; width: 100%; height: auto; max-width: 52px; }
   #setting-chips {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
   }
   .s-chip {
@@ -91,11 +91,11 @@
     border-radius: 4px; cursor: pointer; background: #fff;
     font-size: 12px; color: #666; font-family: inherit;
     transition: background .1s, color .1s, border-color .1s;
-    min-height: 88px; user-select: none;
+    min-height: 88px; min-width: 0; user-select: none;
   }
   .s-chip:hover { border-color: #888; background: #f9f9f7; }
   .s-chip.sel { background: #1a1a1a !important; color: #fff !important; border-color: #1a1a1a !important; font-weight: 500; }
-  .s-chip svg { display: block; flex-shrink: 0; }
+  .s-chip svg { display: block; flex-shrink: 1; width: 100%; height: auto; max-width: 52px; }
   .s-chip.sel svg { filter: invert(1); }
   .a-chip.sel svg { filter: invert(1); }
   .chip {
@@ -225,6 +225,12 @@
   .error-banner {
     background: #fff0f0; border: 0.5px solid #f0c0c0; border-radius: 8px;
     padding: 10px 14px; font-size: 13px; color: #933; margin-bottom: 1rem; display: none;
+  }
+  @media (max-width: 420px) {
+    body { padding: 1rem 0.5rem 3rem; }
+    .card { padding: 1.25rem; }
+    #cat-chips, #abund-field .abund-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #setting-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 </style>
 </head>

@@ -1311,6 +1311,17 @@ function useMyLocation(){
     return;
   }
 
+  // Geolocation is only available in secure contexts (https:// or localhost).
+  // On a plain http:// page, or a file:// page in most browsers, the browser
+  // auto-denies the request — which looks identical to the user rejecting the
+  // permission prompt, so we check for it explicitly and say so.
+  if(window.isSecureContext === false){
+    hint.textContent = 'Location requires HTTPS. This page is loaded over ' +
+      (location.protocol === 'file:' ? 'file://, so the browser blocks it automatically.' : 'an insecure connection.') +
+      ' Serve it over https:// (or localhost) to use this button.';
+    return;
+  }
+
   const originalLabel = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Locating…';
@@ -1335,9 +1346,15 @@ function useMyLocation(){
     err => {
       btn.disabled = false;
       btn.textContent = originalLabel;
-      hint.textContent = err.code === err.PERMISSION_DENIED
-        ? 'Location access denied — try searching or tapping the map instead.'
-        : 'Could not get your location — try searching or tapping the map instead.';
+      if(err.code === err.PERMISSION_DENIED){
+        hint.textContent = 'Location access is blocked for this site. Check your browser\'s site settings (the icon left of the address bar) and your device\'s system location settings, then try again.';
+      } else if(err.code === err.POSITION_UNAVAILABLE){
+        hint.textContent = 'Your location couldn\'t be determined right now — try again, or search/tap the map instead.';
+      } else if(err.code === err.TIMEOUT){
+        hint.textContent = 'Getting your location timed out — try again, or search/tap the map instead.';
+      } else {
+        hint.textContent = 'Could not get your location — try searching or tapping the map instead.';
+      }
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
   );

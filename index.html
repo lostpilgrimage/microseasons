@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Submit an Observation — SD Microseason Project</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: #f9f9f7;
     min-height: 100vh;
     display: flex;
@@ -42,13 +45,13 @@
   .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 8px; }
   .btn-primary {
     padding: 10px 22px; font-size: 14px; font-weight: 500;
-    border-radius: 8px; border: none; background: #1a1a1a;
+    border-radius: 4px; border: none; background: #1a1a1a;
     color: #fff; cursor: pointer; font-family: inherit;
   }
   .btn-primary:hover { opacity: .85; }
   .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
   .btn-back {
-    padding: 10px 14px; font-size: 14px; border-radius: 8px;
+    padding: 10px 14px; font-size: 14px; border-radius: 4px;
     border: 0.5px solid #ccc; background: transparent;
     color: #888; cursor: pointer; font-family: inherit;
   }
@@ -68,7 +71,7 @@
     display: flex; flex-direction: column; align-items: center;
     justify-content: flex-end; gap: 6px;
     padding: 10px 6px 10px; border: 0.5px solid #ccc;
-    border-radius: 12px; cursor: pointer; background: #fff;
+    border-radius: 4px; cursor: pointer; background: #fff;
     font-size: 12px; color: #666; font-family: inherit;
     transition: background .1s, color .1s, border-color .1s;
     min-height: 80px; user-select: none;
@@ -85,7 +88,7 @@
     display: flex; flex-direction: column; align-items: center;
     justify-content: flex-end; gap: 6px;
     padding: 10px 6px 10px; border: 0.5px solid #ccc;
-    border-radius: 12px; cursor: pointer; background: #fff;
+    border-radius: 4px; cursor: pointer; background: #fff;
     font-size: 12px; color: #666; font-family: inherit;
     transition: background .1s, color .1s, border-color .1s;
     min-height: 88px; user-select: none;
@@ -96,7 +99,7 @@
   .s-chip.sel svg { filter: invert(1); }
   .a-chip.sel svg { filter: invert(1); }
   .chip {
-    padding: 8px 14px; font-size: 13px; border-radius: 999px;
+    padding: 8px 14px; font-size: 13px; border-radius: 4px;
     border: 0.5px solid #ccc; cursor: pointer; background: #fff;
     color: #666; display: inline-flex; align-items: center; gap: 6px;
     font-family: inherit; transition: background .1s, color .1s, border-color .1s;
@@ -120,7 +123,7 @@
   .loc-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
   .loc-btn {
     flex: 1; padding: 10px; font-size: 13px; border: 0.5px solid #ccc;
-    border-radius: 8px; cursor: pointer; background: #fff; color: #666;
+    border-radius: 4px; cursor: pointer; background: #fff; color: #666;
     display: flex; align-items: center; justify-content: center; gap: 7px;
     font-family: inherit;
   }
@@ -139,14 +142,14 @@
   .address-row { display: flex; gap: 6px; margin-bottom: 6px; }
   .address-row input { flex: 1; }
   .address-row button {
-    padding: 8px 12px; font-size: 13px; border-radius: 8px;
+    padding: 8px 12px; font-size: 13px; border-radius: 4px;
     border: 0.5px solid #ccc; background: #fff; color: #333;
     cursor: pointer; white-space: nowrap; font-family: inherit; flex-shrink: 0;
   }
   .address-row button:hover { background: #f5f5f5; }
   .ts-pills { display: flex; gap: 6px; margin-bottom: 8px; }
   .ts-pill {
-    font-size: 12px; padding: 5px 14px; border-radius: 999px;
+    font-size: 12px; padding: 5px 14px; border-radius: 4px;
     border: 0.5px solid #ccc; cursor: pointer; background: #fff;
     color: #666; font-family: inherit;
   }
@@ -195,13 +198,13 @@
   .new-tag-row { display: none; flex-direction: row; gap: 6px; align-items: center; margin-top: 8px; }
   .new-tag-row input { font-size: 13px; padding: 6px 10px; }
   .new-tag-row button {
-    padding: 6px 12px; font-size: 12px; border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; border-radius: 4px;
     border: 0.5px solid #ccc; background: #fff; color: #333;
     cursor: pointer; white-space: nowrap; font-family: inherit;
   }
   .suggest-btn {
     display: inline-flex; align-items: center; gap: 5px; padding: 8px 12px;
-    font-size: 13px; border-radius: 999px; border: 0.5px dashed #ccc;
+    font-size: 13px; border-radius: 4px; border: 0.5px dashed #ccc;
     cursor: pointer; background: transparent; color: #aaa; font-family: inherit;
   }
   .suggest-btn:hover { color: #666; }
@@ -518,13 +521,7 @@
           <div>
             <label style="font-size:11px;margin-bottom:3px">Date</label>
             <div style="position:relative">
-              <input type="date" id="obs-date-retro" onchange="updateDatePlaceholder(this)">
-              <span id="date-placeholder" style="
-                position:absolute; inset:0; pointer-events:none;
-                display:flex; align-items:center; padding:0 10px;
-                font-size:14px; color:#aaa; border-radius:8px;
-                background:#f5f5f3;
-              ">MM/DD/YYYY</span>
+              <input type="date" id="obs-date-retro">
             </div>
           </div>
           <div>
@@ -1236,7 +1233,6 @@ function setTs(mode){
     document.getElementById('ts-now-display').style.display = 'none';
     document.getElementById('ts-retro-display').style.display = 'block';
     document.getElementById('obs-date-retro').value = '';
-  document.getElementById('date-placeholder').style.display = 'flex';
     document.getElementById('obs-time-retro').value = '';
     // Reset exact-time override state
     exactTimeOpen = false;
@@ -1251,10 +1247,6 @@ function toggleExactTime(){
   document.getElementById('time-slot-wrap').style.display = 'none';
   document.getElementById('exact-time-row').style.display = 'block';
   document.getElementById('obs-time-now').value = nearestTimeSlot();
-}
-
-function updateDatePlaceholder(input){
-  document.getElementById('date-placeholder').style.display = input.value ? 'none' : 'flex';
 }
 
 function revertToSlot(){

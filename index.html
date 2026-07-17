@@ -559,7 +559,8 @@
           onkeydown="if(event.key==='Enter'){searchAddress();event.preventDefault();}">
         <button onclick="searchAddress()">Search</button>
       </div>
-      <div class="hint" id="address-hint" style="margin-bottom:6px">Or tap the map directly to drop a pin.</div>
+      <button type="button" id="geo-btn" class="loc-btn" style="width:100%" onclick="useMyLocation()">📍 Use my current location</button>
+      <div class="hint" id="address-hint" style="margin:6px 0">Or tap the map directly to drop a pin.</div>
       <div id="map-container">
         <div class="map-loading" id="map-loading">Loading map…</div>
         <div id="leaflet-map"></div>
@@ -1298,6 +1299,48 @@ function placePin(lat, lng){
     });
   }
   document.getElementById('map-hint').textContent = `Pin at ${pinLat}°N, ${Math.abs(pinLng)}°W — drag to adjust.`;
+}
+
+// ── Use my current location (browser geolocation) ──
+function useMyLocation(){
+  const btn  = document.getElementById('geo-btn');
+  const hint = document.getElementById('address-hint');
+
+  if(!navigator.geolocation){
+    hint.textContent = 'Geolocation isn\'t supported by your browser — try searching or tapping the map instead.';
+    return;
+  }
+
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Locating…';
+  hint.textContent = 'Getting your location…';
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude, longitude } = pos.coords;
+      document.getElementById('map-container').style.display = 'block';
+      initMap();
+      setTimeout(() => {
+        if(leafletMap){
+          leafletMap.invalidateSize();
+          leafletMap.setView([latitude, longitude], 16);
+        }
+        placePin(latitude, longitude);
+        hint.textContent = 'Using your current location — drag the pin to fine-tune.';
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+      }, 50);
+    },
+    err => {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      hint.textContent = err.code === err.PERMISSION_DENIED
+        ? 'Location access denied — try searching or tapping the map instead.'
+        : 'Could not get your location — try searching or tapping the map instead.';
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
 }
 
 // ── Address search (Nominatim / OpenStreetMap — no API key needed) ──
